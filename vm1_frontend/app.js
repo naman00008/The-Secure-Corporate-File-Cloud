@@ -112,7 +112,7 @@ function startApp() {
         document.getElementById('page-title').innerText = 'Super Admin Dashboard';
     }
 
-    setTimeout(() => logEvent(`SYSTEM: Authentication Successful. Welcome ${currentUser}.`, 'text-green-400'), 200);
+    setTimeout(() => logEvent(`SYSTEM: Authentication Successful. Welcome ${currentUser}.`, 'text-green-600'), 200);
     setInterval(updateDashboard, 5000); 
     setInterval(fetchSecurityLogs, 5000); 
 }
@@ -154,7 +154,7 @@ function mockAction(msg) {
     setTimeout(() => toast.classList.add('translate-x-full', 'opacity-0'), 3000);
 }
 
-function logEvent(msg, colorClass = 'text-green-400') {
+function logEvent(msg, colorClass = 'text-green-600') {
     const feed = document.getElementById('activity-feed');
     const time = new Date().toLocaleTimeString('en-US', { hour12: false });
     feed.innerHTML = `<div class="${colorClass}">[${time}] ${msg}</div>` + feed.innerHTML;
@@ -241,9 +241,9 @@ async function fetchSecurityLogs() {
         feed.innerHTML = '';
         logs.forEach(l => {
             const time = new Date(l.timestamp).toLocaleTimeString('en-US', { hour12: false });
-            let color = 'text-green-400';
-            if (l.event_type.includes('FAILED') || l.event_type.includes('LOCKED')) color = 'text-yellow-400';
-            if (l.event_type.includes('MALWARE')) color = 'text-red-500 bg-red-900/30 p-1 rounded font-bold uppercase';
+            let color = 'text-green-600';
+            if (l.event_type.includes('FAILED') || l.event_type.includes('LOCKED')) color = 'text-amber-600';
+            if (l.event_type.includes('MALWARE')) color = 'text-red-700 bg-red-100 p-1 rounded font-bold uppercase';
             
             feed.innerHTML += `<div class="${color} mb-1 text-xs">[${time}] <b class="mr-1">${l.event_type}</b> <span class="text-gray-500">(${l.username}):</span> ${l.details}</div>`;
         });
@@ -391,7 +391,7 @@ async function toggleLockdown() {
 
 // Download / Preview Fetcher
 async function handleFileFetch(uploader, filename, isPreview) {
-    logEvent(`DECRYPT: Requesting retrieval of ${filename}`, 'text-purple-400');
+    logEvent(`DECRYPT: Requesting retrieval of ${filename}`, 'text-purple-600');
     try {
         const endpoint = isPreview ? `/preview/${uploader}/${filename}` : `/download/${uploader}/${filename}`;
         const res = await fetch(`${API_URL}${endpoint}`, { headers: getHeaders() });
@@ -404,7 +404,7 @@ async function handleFileFetch(uploader, filename, isPreview) {
         const blob = await res.blob();
         
         if (isPreview) {
-            logEvent(`PREVIEW: Viewing ${filename} securely in memory`, 'text-blue-400');
+            logEvent(`PREVIEW: Viewing ${filename} securely in memory`, 'text-blue-600');
             const url = window.URL.createObjectURL(blob);
             const origName = filename.split('_').slice(2).join('_');
             const container = document.getElementById('preview-content');
@@ -429,11 +429,11 @@ async function handleFileFetch(uploader, filename, isPreview) {
             a.download = origName;
             document.body.appendChild(a);
             a.click();
-            logEvent(`DECRYPT: Success! ${origName} downloaded.`, 'text-green-500');
+            logEvent(`DECRYPT: Success! ${origName} downloaded.`, 'text-green-600');
             window.URL.revokeObjectURL(url);
         }
     } catch (err) {
-        logEvent(`ERROR: ${err.message}`, 'text-red-500');
+        logEvent(`ERROR: ${err.message}`, 'text-red-600');
         mockAction(`Preview Failed: ${err.message}`);
     }
 }
@@ -452,7 +452,7 @@ let vm2Chart, vm3Chart, storageChart;
 function initCharts() {
     const ctx2 = document.getElementById('vm2Chart').getContext('2d');
     const ctx3 = document.getElementById('vm3Chart').getContext('2d');
-    const opts = { type: 'line', data: { labels: ['','','','',''], datasets: [{ label:'Load', data:[0,0,0,0,0], borderColor: '#4f46e5', tension: 0.4, borderWidth: 2, pointBackgroundColor: '#4f46e5' }] }, options: { animation: false, scales: { x: { grid: { color: '#334155' } }, y: { min: 0, max: 5, grid: { color: '#334155' }, ticks: { color: '#6b7280' } } }, plugins:{legend:{display:false}} } };
+    const opts = { type: 'line', data: { labels: ['','','','',''], datasets: [{ label:'Load', data:[0,0,0,0,0], borderColor: '#4f46e5', tension: 0.4, borderWidth: 2, pointBackgroundColor: '#4f46e5' }] }, options: { animation: false, scales: { x: { grid: { color: '#e5e7eb' } }, y: { min: 0, max: 5, grid: { color: '#e5e7eb' }, ticks: { color: '#6b7280' } } }, plugins:{legend:{display:false}} } };
     
     vm2Chart = new Chart(ctx2, JSON.parse(JSON.stringify(opts)));
     opts.data.datasets[0].borderColor = '#10b981';
@@ -481,7 +481,7 @@ async function updateDashboard() {
             <tr class="hover:bg-gray-50 transition"><td class="py-3 font-bold text-gray-700">VM 2</td><td class="py-3 text-gray-400">${data.vm2.platform}</td><td class="py-3 text-gray-400">${data.vm2.nodeVersion}</td><td class="py-3 text-gray-400">${data.vm2.mem} MB</td><td class="py-3 text-gray-400 text-right">${data.vm2.uptime}</td></tr>
             <tr class="hover:bg-gray-50 transition"><td class="py-3 font-bold text-gray-700">VM 3</td><td class="py-3 text-gray-400">${data.vm3.platform}</td><td class="py-3 text-gray-400">${data.vm3.nodeVersion}</td><td class="py-3 text-gray-400">${data.vm3.totalMem} MB</td><td class="py-3 text-gray-400 text-right">${data.vm3.uptime}</td></tr>
         `;
-        if(Math.random() > 0.8) logEvent(`SYSTEM: Health check OK. Latency: ${Math.floor(Math.random()*15+5)}ms`, 'text-gray-400');
+        if(Math.random() > 0.8) logEvent(`SYSTEM: Health check OK. Latency: ${Math.floor(Math.random()*15+5)}ms`, 'text-gray-500');
     } catch {
         document.getElementById('vm2-dot').className = 'w-2 h-2 rounded-full bg-red-500';
         document.getElementById('vm2-text').innerText = 'VM 2: Disconnected';
