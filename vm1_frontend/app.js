@@ -1,12 +1,10 @@
-const API_URL = 'http://localhost:3000/api';
+const API_URL = window.location.protocol === 'file:' ? 'http://localhost:3000/api' : '/api';
 
 // --- Auth & Init ---
 let jwtToken = null;
 let currentUser = null;
 let currentRole = 'employee';
-let authState = 'LOGIN'; // LOGIN, REGISTER, FORGOT, OTP_LOGIN, OTP_REGISTER, OTP_FORGOT
-let pendingEmail = '';
-let pendingUsername = '';
+let authState = 'LOGIN'; // LOGIN, REGISTER, or FORGOT
 
 const authToggleBtn = document.getElementById('auth-toggle-btn');
 const authForgotBtn = document.getElementById('auth-forgot-btn');
@@ -15,208 +13,127 @@ const authSubtitle = document.getElementById('auth-subtitle');
 const authActionBtn = document.getElementById('auth-action-btn');
 const authError = document.getElementById('auth-error');
 const authSuccess = document.getElementById('auth-success');
+const passLabel = document.getElementById('password-label');
 
 const fUser = document.getElementById('username');
-const fEmail = document.getElementById('email');
 const fPass = document.getElementById('password');
-const fOtp = document.getElementById('otp');
-const fNewPass = document.getElementById('new-password');
+const fRec = document.getElementById('recovery-key');
+const recField = document.getElementById('recovery-field');
 
 function updateAuthUI() {
     authError.classList.add('hidden');
     authSuccess.classList.add('hidden');
-    fUser.classList.add('hidden'); fEmail.classList.add('hidden'); fPass.classList.add('hidden'); fOtp.classList.add('hidden'); fNewPass.classList.add('hidden');
-    authToggleBtn.classList.add('hidden'); authForgotBtn.classList.add('hidden');
+    if (authForgotBtn) authForgotBtn.classList.add('hidden');
+    if (recField) recField.classList.add('hidden');
     
     if (authState === 'LOGIN') {
-        authTitle.innerText = 'CorpVault Login'; authSubtitle.innerText = 'Restricted Enterprise Access';
-        authActionBtn.innerText = 'Authenticate';
-        fUser.classList.remove('hidden'); fPass.classList.remove('hidden');
-        authToggleBtn.classList.remove('hidden'); authToggleBtn.innerText = 'Need an account? Register here.';
-        authForgotBtn.classList.remove('hidden');
+        authTitle.innerText = 'Sign in to Console';
+        authSubtitle.innerText = 'Enterprise Secure Vault';
+        authActionBtn.innerText = 'Sign in';
+        if (passLabel) passLabel.innerText = 'Password';
+        if (fPass) fPass.placeholder = 'Password';
+        if (authToggleBtn) authToggleBtn.innerText = 'Create an account';
+        if (authForgotBtn) authForgotBtn.classList.remove('hidden');
     } else if (authState === 'REGISTER') {
-        authTitle.innerText = 'Create Account'; authSubtitle.innerText = 'Provision a New Secure Vault';
-        authActionBtn.innerText = 'Send Verification OTP';
-        fUser.classList.remove('hidden'); fEmail.classList.remove('hidden'); fPass.classList.remove('hidden');
-        authToggleBtn.classList.remove('hidden'); authToggleBtn.innerText = 'Already have an account? Login here.';
+        authTitle.innerText = 'Create Account';
+        authSubtitle.innerText = 'Provision a New Secure Vault';
+        authActionBtn.innerText = 'Register';
+        if (passLabel) passLabel.innerText = 'Password';
+        if (fPass) fPass.placeholder = 'Password';
+        if (authToggleBtn) authToggleBtn.innerText = 'Already have an account? Sign in.';
     } else if (authState === 'FORGOT') {
-        authTitle.innerText = 'Password Reset'; authSubtitle.innerText = 'Verify your identity';
-        authActionBtn.innerText = 'Send Reset OTP';
-        fEmail.classList.remove('hidden');
-        authToggleBtn.classList.remove('hidden'); authToggleBtn.innerText = 'Back to Login';
-    } else if (authState === 'OTP_LOGIN' || authState === 'OTP_REGISTER') {
-        authTitle.innerText = '2FA Required'; authSubtitle.innerText = `Check ${pendingEmail} for OTP`;
-        authActionBtn.innerText = 'Verify & Login';
-        fOtp.classList.remove('hidden');
-        authToggleBtn.classList.remove('hidden'); authToggleBtn.innerText = 'Cancel / Go Back';
-    } else if (authState === 'OTP_FORGOT') {
-        authTitle.innerText = 'Set New Password'; authSubtitle.innerText = `Enter OTP sent to ${pendingEmail}`;
+        authTitle.innerText = 'Reset Password';
+        authSubtitle.innerText = 'Enter Recovery Key to set new password';
         authActionBtn.innerText = 'Reset Password';
-        fOtp.classList.remove('hidden'); fNewPass.classList.remove('hidden');
-        authToggleBtn.classList.remove('hidden'); authToggleBtn.innerText = 'Cancel / Go Back';
+        if (passLabel) passLabel.innerText = 'New Password';
+        if (fPass) fPass.placeholder = 'New Password';
+        if (recField) recField.classList.remove('hidden');
+        if (authToggleBtn) authToggleBtn.innerText = 'Back to Login';
     }
 }
 
-authToggleBtn.addEventListener('click', () => {
-    if (authState === 'LOGIN') authState = 'REGISTER';
-    else authState = 'LOGIN';
-    updateAuthUI();
-});
+if (authToggleBtn) {
+    authToggleBtn.addEventListener('click', () => {
+        if (authState === 'LOGIN' || authState === 'FORGOT') authState = 'REGISTER';
+        else authState = 'LOGIN';
+        updateAuthUI();
+    });
+}
+if (authForgotBtn) {
+    authForgotBtn.addEventListener('click', () => {
+        authState = 'FORGOT';
+        updateAuthUI();
+    });
+}
 
-authForgotBtn.addEventListener('click', () => {
-    authState = 'FORGOT';
-    updateAuthUI();
-});
+const authForm = document.getElementById('auth-form');
+if (authForm) {
+    authForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        authError.classList.add('hidden');
+        authSuccess.classList.add('hidden');
+        authActionBtn.innerText = 'Processing...';
 
-document.getElementById('auth-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    authError.classList.add('hidden');
-    authSuccess.classList.add('hidden');
-    authActionBtn.innerText = 'Processing...';
+        const reqData = {
+            username: fUser.value.trim(),
+            password: fPass.value,
+            recoveryKey: fRec ? fRec.value.trim() : ''
+        };
 
-    const reqData = {
-        username: fUser.value.trim(),
-        email: fEmail.value.trim(),
-        password: fPass.value,
-        otp: fOtp.value.trim(),
-        newPassword: fNewPass.value
-    };
-
-    try {
-        let res, data;
-        
-        if (authState === 'LOGIN') {
-            res = await fetch(`${API_URL}/login-step1`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(reqData) });
-            data = await res.json();
-            if (data.requireOtp) {
-                pendingEmail = data.email;
-                pendingUsername = reqData.username;
-                authState = 'OTP_LOGIN';
-                updateAuthUI();
-                authSuccess.innerHTML = data.previewUrl ? `OTP Sent! <a href="${data.previewUrl}" target="_blank" class="underline font-bold text-blue-700">Click to View Email</a>` : 'OTP Sent to email! Check your inbox.';
-                authSuccess.classList.remove('hidden');
-                return;
+        try {
+            let res, data;
+            
+            if (authState === 'LOGIN') {
+                res = await fetch(`${API_URL}/login`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(reqData) });
+            } else if (authState === 'REGISTER') {
+                res = await fetch(`${API_URL}/register`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(reqData) });
+            } else if (authState === 'FORGOT') {
+                res = await fetch(`${API_URL}/reset-password-simple`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ username: reqData.username, newPassword: reqData.password, recoveryKey: reqData.recoveryKey }) });
             }
-        } else if (authState === 'OTP_LOGIN') {
-            res = await fetch(`${API_URL}/login-step2`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ username: pendingUsername, otp: reqData.otp }) });
+            
             data = await res.json();
-        } else if (authState === 'REGISTER') {
-            res = await fetch(`${API_URL}/send-otp`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email: reqData.email, context: 'register' }) });
-            data = await res.json();
-            if (res.ok) {
-                pendingEmail = reqData.email;
-                authState = 'OTP_REGISTER';
-                updateAuthUI();
-                authSuccess.innerHTML = data.previewUrl ? `OTP Sent! <a href="${data.previewUrl}" target="_blank" class="underline font-bold text-blue-700">Click to View Email</a>` : 'OTP Sent to email! Check your inbox.';
-                authSuccess.classList.remove('hidden');
-                return;
-            }
-        } else if (authState === 'OTP_REGISTER') {
-            res = await fetch(`${API_URL}/register`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ username: reqData.username, email: pendingEmail, password: reqData.password, otp: reqData.otp }) });
-            data = await res.json();
-        } else if (authState === 'FORGOT') {
-            res = await fetch(`${API_URL}/send-otp`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email: reqData.email, context: 'reset' }) });
-            data = await res.json();
-            if (res.ok) {
-                pendingEmail = reqData.email;
-                authState = 'OTP_FORGOT';
-                updateAuthUI();
-                authSuccess.innerHTML = data.previewUrl ? `OTP Sent! <a href="${data.previewUrl}" target="_blank" class="underline font-bold text-blue-700">Click to View Email</a>` : 'OTP Sent to email! Check your inbox.';
-                authSuccess.classList.remove('hidden');
-                return;
-            }
-        } else if (authState === 'OTP_FORGOT') {
-            res = await fetch(`${API_URL}/reset-password`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email: pendingEmail, otp: reqData.otp, newPassword: reqData.newPassword }) });
-            data = await res.json();
-            if (res.ok) {
+
+            if (res.ok && authState === 'FORGOT') {
                 authState = 'LOGIN';
                 updateAuthUI();
-                authSuccess.innerText = 'Password reset successfully! You may now login.';
+                authSuccess.innerText = 'Password reset! You can now login.';
                 authSuccess.classList.remove('hidden');
                 return;
             }
-        }
 
-        if (res && !res.ok) {
-            authError.innerText = data.error || 'Request failed';
-            authError.classList.remove('hidden');
-            updateAuthUI(); // Reset button text
-            return;
-        }
+            if (res.ok && authState === 'REGISTER') {
+                authState = 'LOGIN';
+                updateAuthUI();
+                authSuccess.innerHTML = `<span class="text-indigo-800 font-bold block mb-1">ACCOUNT CREATED!</span><span class="text-gray-700 block mb-2">Save this exact Recovery Key immediately. You will need it if you ever forget your password.</span><div class="bg-indigo-100 p-2 font-mono text-indigo-900 border border-indigo-300 rounded text-base">${data.recoveryKey}</div>`;
+                authSuccess.classList.remove('hidden');
+                authSuccess.classList.remove('text-green-600', 'bg-green-50', 'border-green-100');
+                authSuccess.classList.add('bg-white', 'border-indigo-200');
+                return;
+            }
 
-        if (data && data.token) {
-            jwtToken = data.token;
-            currentUser = data.username;
-            currentRole = data.role;
-            
-            document.getElementById('login-overlay').style.display = 'none';
-            document.getElementById('app-container').style.display = 'flex';
-            startApp();
-        }
-    } catch (err) {
-        authError.innerText = 'Connection to gateway failed';
-        authError.classList.remove('hidden');
-        updateAuthUI();
-    }
-});
+            if (!res.ok) {
+                authError.innerText = data.error || 'Request failed';
+                authError.classList.remove('hidden');
+                updateAuthUI();
+                return;
+            }
 
-authActionBtn.addEventListener('click', async () => {
-    const user = document.getElementById('username').value;
-    const pass = document.getElementById('password').value;
-    
-    authError.classList.add('hidden');
-    authSuccess.classList.add('hidden');
-
-    if (isLoginMode) {
-        // --- LOGIN ---
-        try {
-            const res = await fetch(`${API_URL}/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: user, password: pass })
-            });
-            const data = await res.json();
-            if (res.ok) {
+            if (data && data.token) {
                 jwtToken = data.token;
                 currentUser = data.username;
                 currentRole = data.role;
-                sessionStorage.setItem('token', jwtToken);
-                sessionStorage.setItem('username', currentUser);
-                sessionStorage.setItem('role', currentRole);
+                
                 document.getElementById('login-overlay').style.display = 'none';
                 document.getElementById('app-container').style.display = 'flex';
                 startApp();
-            } else {
-                authError.innerText = data.error || 'Invalid Credentials';
-                authError.classList.remove('hidden');
             }
-        } catch {
-            authError.innerText = 'Backend unreachable';
+        } catch (err) {
+            authError.innerText = 'Connection to gateway failed';
             authError.classList.remove('hidden');
+            updateAuthUI();
         }
-    } else {
-        // --- REGISTER ---
-        try {
-            const res = await fetch(`${API_URL}/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: user, password: pass })
-            });
-            const data = await res.json();
-            if (res.ok) {
-                authSuccess.innerText = 'Account created! Please log in.';
-                authSuccess.classList.remove('hidden');
-                setTimeout(() => authToggleBtn.click(), 2000); 
-            } else {
-                authError.innerText = data.error || 'Registration failed';
-                authError.classList.remove('hidden');
-            }
-        } catch {
-            authError.innerText = 'Backend unreachable';
-            authError.classList.remove('hidden');
-        }
-    }
-});
+    });
+}
 
 function logout() {
     sessionStorage.removeItem('token');
@@ -238,8 +155,12 @@ function startApp() {
     if (currentRole === 'admin') {
         document.getElementById('admin-badge').classList.remove('hidden');
         document.getElementById('nav-item-admin').classList.remove('hidden');
-        // No sidebar color change for admin in light theme
+        const lockBtn = document.getElementById('btn-lockdown');
+        if (lockBtn) lockBtn.classList.remove('hidden');
         document.getElementById('page-title').innerText = 'Super Admin Dashboard';
+    } else {
+        const lockBtn = document.getElementById('btn-lockdown');
+        if (lockBtn) lockBtn.classList.add('hidden');
     }
 
     setTimeout(() => logEvent(`SYSTEM: Authentication Successful. Welcome ${currentUser}.`, 'text-green-600'), 200);
@@ -373,8 +294,8 @@ async function fetchSecurityLogs() {
             const time = new Date(l.timestamp).toLocaleTimeString('en-US', { hour12: false });
             let color = 'text-green-600';
             if (l.event_type.includes('FAILED') || l.event_type.includes('LOCKED')) color = 'text-amber-600';
-            if (l.event_type.includes('SYSTEM_LOCKDOWN')) color = 'text-red-600 font-semibold';
-            if (l.event_type.includes('MALWARE')) color = 'text-red-700 bg-red-100 p-1 rounded font-bold uppercase';
+            if (l.event_type.includes('SYSTEM_LOCKDOWN')) color = 'text-blue-600 font-semibold';
+            if (l.event_type.includes('MALWARE')) color = 'text-indigo-700 bg-indigo-100 p-1 rounded font-bold uppercase';
             
             feed.innerHTML += `<div class="${color} mb-1 text-xs">[${time}] <b class="mr-1">${l.event_type}</b> <span class="text-gray-500">(${l.username}):</span> ${l.details}</div>`;
         });
