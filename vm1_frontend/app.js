@@ -243,6 +243,7 @@ async function fetchSecurityLogs() {
             const time = new Date(l.timestamp).toLocaleTimeString('en-US', { hour12: false });
             let color = 'text-green-600';
             if (l.event_type.includes('FAILED') || l.event_type.includes('LOCKED')) color = 'text-amber-600';
+            if (l.event_type.includes('SYSTEM_LOCKDOWN')) color = 'text-red-600 font-semibold';
             if (l.event_type.includes('MALWARE')) color = 'text-red-700 bg-red-100 p-1 rounded font-bold uppercase';
             
             feed.innerHTML += `<div class="${color} mb-1 text-xs">[${time}] <b class="mr-1">${l.event_type}</b> <span class="text-gray-500">(${l.username}):</span> ${l.details}</div>`;
