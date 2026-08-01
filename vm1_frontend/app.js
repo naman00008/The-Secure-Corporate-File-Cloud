@@ -101,8 +101,9 @@ function startApp() {
     fetchLogs();
     fetchSecurityLogs();
     
-    document.getElementById('display-user').innerText = currentUser;
-    document.getElementById('display-avatar').src = `https://ui-avatars.com/api/?name=${currentUser}&background=0D8ABC&color=fff`;
+    document.getElementById('display-user').innerText = currentUser || 'user';
+    document.getElementById('dropdown-user').innerText = currentUser || 'user';
+    document.getElementById('display-avatar').src = `https://ui-avatars.com/api/?name=${currentUser || 'U'}&background=4f46e5&color=fff`;
 
     if (currentRole === 'admin') {
         document.getElementById('admin-badge').classList.remove('hidden');
@@ -160,15 +161,13 @@ function logEvent(msg, colorClass = 'text-green-400') {
 }
 
 // --- Upload Logic (With Malware Scanner) ---
-const dropZone = document.getElementById('drop-zone');
-const fileInput = document.getElementById('file-input');
-const uploadBtn = document.getElementById('upload-btn');
+let selectedFiles = [];
 
 dropZone.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', (e) => {
     if (e.target.files.length) {
-        selectedFile = e.target.files[0];
-        document.getElementById('file-name').innerText = selectedFile.name;
+        selectedFiles = Array.from(e.target.files);
+        document.getElementById('file-name').innerText = selectedFiles.length === 1 ? selectedFiles[0].name : `${selectedFiles.length} files selected`;
         document.getElementById('upload-ui').classList.remove('hidden');
         document.getElementById('progress-area').classList.add('hidden');
         uploadBtn.classList.remove('hidden');
@@ -187,37 +186,47 @@ uploadBtn.addEventListener('click', async () => {
     
     await new Promise(r => setTimeout(r, 2000));
 
-    pb.style.width = '50%';
-    pt.innerHTML = '<i class="fa-solid fa-lock mr-1"></i> Scan passed. Encrypting (AES-256)...';
-
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-    formData.append('ttl', document.getElementById('ttl-select').value);
-
-    try {
-        const res = await fetch(`${API_URL}/upload`, { 
-            method: 'POST', 
-            headers: getHeaders(), 
-            body: formData 
-        });
-        const data = await res.json();
+    pt.innerHTML = `<i class="fa-solid fa-lock mr-1"></i> Scan passed. Encrypting ${selectedFiles.length} file(s)...`;
+    
+    let successCount = 0;
+    
+    for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        pb.style.width = `${20 + ((i / selectedFiles.length) * 80)}%`;
         
-        pb.style.width = '100%';
-        if (res.ok) {
-            pt.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> Success! Stored securely.`;
-            pt.className = 'text-green-600';
-            pb.classList.replace('bg-blue-600', 'bg-green-500');
-            updateDashboard(); 
-        } else {
-            throw new Error(data.error);
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('ttl', document.getElementById('ttl-select').value);
+
+        try {
+            const res = await fetch(`${API_URL}/upload`, { 
+                method: 'POST', 
+                headers: getHeaders(), 
+                body: formData 
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                successCount++;
+            } else {
+                throw new Error(data.error);
+            }
+        } catch (err) {
+            pt.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Error on ${file.name}: ${err.message}`;
+            pt.className = 'text-red-600 font-bold bg-red-100 px-3 py-1 rounded inline-block';
+            pb.classList.replace('bg-indigo-600', 'bg-red-500');
+            pb.style.width = '100%';
+            fetchSecurityLogs(); // Instantly refresh logs to show breach
+            return; // Halt upload batch on error
         }
-    } catch (err) {
-        pt.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> ${err.message}`;
-        pt.className = 'text-red-600 font-bold bg-red-100 px-3 py-1 rounded inline-block';
-        pb.classList.replace('bg-blue-600', 'bg-red-500');
-        pb.style.width = '100%';
-        fetchSecurityLogs(); // Instantly refresh logs to show breach
     }
+    
+    pb.style.width = '100%';
+    pt.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> Success! ${successCount} file(s) stored securely.`;
+    pt.className = 'text-green-600 font-medium';
+    pb.classList.replace('bg-indigo-600', 'bg-green-500');
+    updateDashboard();
+    fetchLogs();
 });
 
 // --- Security Logs & Decrypt Logic ---
@@ -233,8 +242,12 @@ async function fetchSecurityLogs() {
             if (l.event_type.includes('FAILED') || l.event_type.includes('LOCKED')) color = 'text-yellow-400';
             if (l.event_type.includes('MALWARE')) color = 'text-red-500 bg-red-900/30 p-1 rounded font-bold uppercase';
             
-            feed.innerHTML += `<div class="${color} mb-1">[${time}] <b>${l.event_type}</b> (${l.username}): ${l.details}</div>`;
+            feed.innerHTML += `<div class="${color} mb-1 text-xs">[${time}] <b class="mr-1">${l.event_type}</b> <span class="text-slate-400">(${l.username}):</span> ${l.details}</div>`;
         });
+        
+        while(feed.children.length > 50) {
+            feed.removeChild(feed.lastChild);
+        }
     } catch {}
 }
 
@@ -391,18 +404,17 @@ async function handleFileFetch(uploader, filename, isPreview) {
             logEvent(`PREVIEW: Viewing ${filename} securely in memory`, 'text-blue-400');
             const url = window.URL.createObjectURL(blob);
             const origName = filename.split('_').slice(2).join('_');
-            document.getElementById('preview-title').innerHTML = `<i class="fa-solid fa-eye text-blue-500 mr-2"></i> Previewing: ${origName}`;
             const container = document.getElementById('preview-content');
             
             if (origName.toLowerCase().endsWith('.png') || origName.toLowerCase().endsWith('.jpg') || origName.toLowerCase().endsWith('.jpeg')) {
-                container.innerHTML = `<img src="${url}" class="max-w-full max-h-full rounded shadow-md border border-slate-200">`;
+                container.insertAdjacentHTML('beforeend', `<div class="relative w-[450px] h-full flex-shrink-0 bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden flex flex-col"><div class="bg-slate-50 border-b border-slate-200 px-3 py-2 text-xs font-medium text-slate-700 truncate">${origName}</div><div class="flex-1 p-2 flex items-center justify-center overflow-hidden"><img src="${url}" class="max-w-full max-h-full object-contain"></div></div>`);
             } else if (origName.toLowerCase().endsWith('.pdf')) {
-                container.innerHTML = `<iframe src="${url}" class="w-full h-full border-0 rounded shadow-inner bg-white"></iframe>`;
+                container.insertAdjacentHTML('beforeend', `<div class="relative w-[450px] h-full flex-shrink-0 bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden flex flex-col"><div class="bg-slate-50 border-b border-slate-200 px-3 py-2 text-xs font-medium text-slate-700 truncate">${origName}</div><iframe src="${url}" class="flex-1 w-full border-0"></iframe></div>`);
             } else {
                 const text = await blob.text();
                 // Escape HTML for safety
                 const safeText = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                container.innerHTML = `<div class="w-full h-full overflow-auto bg-white p-6 border border-slate-200 shadow-inner rounded text-sm whitespace-pre-wrap font-mono text-slate-800 text-left">${safeText}</div>`;
+                container.insertAdjacentHTML('beforeend', `<div class="relative w-[450px] h-full flex-shrink-0 bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden flex flex-col"><div class="bg-slate-50 border-b border-slate-200 px-3 py-2 text-xs font-medium text-slate-700 truncate">${origName}</div><div class="flex-1 p-4 overflow-auto text-xs whitespace-pre-wrap font-mono text-slate-800 text-left">${safeText}</div></div>`);
             }
             
             document.getElementById('preview-modal').classList.remove('hidden');
