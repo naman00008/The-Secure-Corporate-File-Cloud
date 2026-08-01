@@ -272,10 +272,10 @@ async function fetchLogs() {
         files.forEach(f => {
             const expires = f.expires_at ? new Date(f.expires_at).toLocaleTimeString() : 'Never';
             
-            let actionBtns = `<button onclick="downloadFile('${f.uploader}', '${f.encrypted_name}')" class="text-blue-600 hover:text-blue-800 text-sm font-bold bg-blue-50 px-3 py-1 rounded mb-1 mr-1">Download</button>`;
+            let actionBtns = `<button onclick="downloadFile('${f.uploader}', '${f.encrypted_name}')" class="text-blue-400 hover:text-blue-300 text-sm font-bold bg-blue-900/30 px-3 py-1 rounded mb-1 mr-1 border border-blue-800 transition">Download</button>`;
             
             if (currentRole === 'admin') {
-                actionBtns += `<button onclick="viewFile('${f.uploader}', '${f.encrypted_name}')" class="text-purple-600 hover:text-purple-800 text-sm font-bold bg-purple-50 px-3 py-1 rounded mb-1">Preview</button>`;
+                actionBtns += `<button onclick="viewFile('${f.uploader}', '${f.encrypted_name}')" class="text-purple-400 hover:text-purple-300 text-sm font-bold bg-purple-900/30 px-3 py-1 rounded mb-1 border border-purple-800 transition">Preview</button>`;
             }
 
             tbody.innerHTML += `
@@ -410,14 +410,14 @@ async function handleFileFetch(uploader, filename, isPreview) {
             const container = document.getElementById('preview-content');
             
             if (origName.toLowerCase().endsWith('.png') || origName.toLowerCase().endsWith('.jpg') || origName.toLowerCase().endsWith('.jpeg')) {
-                container.insertAdjacentHTML('beforeend', `<div class="preview-card relative w-[450px] h-full flex-shrink-0 bg-slate-900 border border-slate-700 shadow-sm rounded-lg overflow-hidden flex flex-col"><div class="bg-slate-800 border-b border-slate-700 px-3 py-2 text-xs font-medium text-slate-300 flex justify-between items-center"><span class="truncate">${origName}</span><button onclick="this.closest('.preview-card').remove()" class="text-slate-500 hover:text-red-400 ml-2"><i class="fa-solid fa-xmark"></i></button></div><div class="flex-1 p-2 flex items-center justify-center overflow-hidden"><img src="${url}" class="max-w-full max-h-full object-contain"></div></div>`);
+                container.insertAdjacentHTML('beforeend', `<div class="preview-card relative w-[600px] h-[95%] flex-shrink-0 bg-slate-900 border border-slate-700 shadow-xl rounded-xl overflow-hidden flex flex-col"><div class="bg-slate-800 border-b border-slate-700 px-4 py-3 text-sm font-medium text-slate-300 flex justify-between items-center"><span class="truncate">${origName}</span><button onclick="this.closest('.preview-card').remove()" class="text-slate-500 hover:text-red-400 ml-2 transition"><i class="fa-solid fa-xmark"></i></button></div><div class="flex-1 p-2 flex items-center justify-center overflow-hidden"><img src="${url}" class="max-w-full max-h-full object-contain rounded"></div></div>`);
             } else if (origName.toLowerCase().endsWith('.pdf')) {
-                container.insertAdjacentHTML('beforeend', `<div class="preview-card relative w-[450px] h-full flex-shrink-0 bg-slate-900 border border-slate-700 shadow-sm rounded-lg overflow-hidden flex flex-col"><div class="bg-slate-800 border-b border-slate-700 px-3 py-2 text-xs font-medium text-slate-300 flex justify-between items-center"><span class="truncate">${origName}</span><button onclick="this.closest('.preview-card').remove()" class="text-slate-500 hover:text-red-400 ml-2"><i class="fa-solid fa-xmark"></i></button></div><iframe src="${url}" class="flex-1 w-full border-0 bg-white"></iframe></div>`);
+                container.insertAdjacentHTML('beforeend', `<div class="preview-card relative w-[600px] h-[95%] flex-shrink-0 bg-slate-900 border border-slate-700 shadow-xl rounded-xl overflow-hidden flex flex-col"><div class="bg-slate-800 border-b border-slate-700 px-4 py-3 text-sm font-medium text-slate-300 flex justify-between items-center"><span class="truncate">${origName}</span><button onclick="this.closest('.preview-card').remove()" class="text-slate-500 hover:text-red-400 ml-2 transition"><i class="fa-solid fa-xmark"></i></button></div><iframe src="${url}" class="flex-1 w-full border-0 bg-white"></iframe></div>`);
             } else {
                 const text = await blob.text();
                 // Escape HTML for safety
                 const safeText = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                container.insertAdjacentHTML('beforeend', `<div class="preview-card relative w-[450px] h-full flex-shrink-0 bg-slate-900 border border-slate-700 shadow-sm rounded-lg overflow-hidden flex flex-col"><div class="bg-slate-800 border-b border-slate-700 px-3 py-2 text-xs font-medium text-slate-300 flex justify-between items-center"><span class="truncate">${origName}</span><button onclick="this.closest('.preview-card').remove()" class="text-slate-500 hover:text-red-400 ml-2"><i class="fa-solid fa-xmark"></i></button></div><div class="flex-1 p-4 overflow-auto text-xs whitespace-pre-wrap font-mono text-slate-200 text-left">${safeText}</div></div>`);
+                container.insertAdjacentHTML('beforeend', `<div class="preview-card relative w-[600px] h-[95%] flex-shrink-0 bg-slate-900 border border-slate-700 shadow-xl rounded-xl overflow-hidden flex flex-col"><div class="bg-slate-800 border-b border-slate-700 px-4 py-3 text-sm font-medium text-slate-300 flex justify-between items-center"><span class="truncate">${origName}</span><button onclick="this.closest('.preview-card').remove()" class="text-slate-500 hover:text-red-400 ml-2 transition"><i class="fa-solid fa-xmark"></i></button></div><div class="flex-1 p-6 overflow-auto text-xs whitespace-pre-wrap font-mono text-slate-300 text-left bg-slate-950">${safeText}</div></div>`);
             }
             
             document.getElementById('preview-modal').classList.remove('hidden');
