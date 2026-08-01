@@ -1,0 +1,9 @@
+{
+  "name": "vm3-vault",
+  "version": "1.0.0",
+  "main": "vault.js",
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6"
+  }
+}

@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  vm1-gateway:
+    build: ./vm1_frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - vm2-processor
+    networks:
+      - cloud-net
+
+  vm2-processor:
+    build: ./vm2_processor
+    ports:
+      - "3000:3000"
+    environment:
+      - VM3_URL=http://vm3-vault:4000
+      - JWT_SECRET=super-secure-jwt-secret
+    depends_on:
+      - vm3-vault
+    networks:
+      - cloud-net
+
+  vm3-vault:
+    build: ./vm3_vault
+    ports:
+      - "4000:4000"
+    volumes:
+      - vault-storage:/usr/src/app/storage
+      - vault-db:/usr/src/app/vault_logs.db
+    networks:
+      - cloud-net
+
+networks:
+  cloud-net:
+    driver: bridge
+
+volumes:
+  vault-storage:
+  vault-db:
