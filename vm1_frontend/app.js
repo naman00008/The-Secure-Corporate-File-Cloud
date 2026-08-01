@@ -1,9 +1,9 @@
 const API_URL = 'http://localhost:3000/api';
 
 // --- Auth & Init ---
-let jwtToken = sessionStorage.getItem('token');
-let currentUser = sessionStorage.getItem('username');
-let currentRole = sessionStorage.getItem('role') || 'employee';
+let jwtToken = null;
+let currentUser = null;
+let currentRole = 'employee';
 let isLoginMode = true;
 
 const authToggleBtn = document.getElementById('auth-toggle-btn');
