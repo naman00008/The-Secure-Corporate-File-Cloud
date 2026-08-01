@@ -108,7 +108,7 @@ function startApp() {
     if (currentRole === 'admin') {
         document.getElementById('admin-badge').classList.remove('hidden');
         document.getElementById('nav-item-admin').classList.remove('hidden');
-        document.querySelector('aside').classList.replace('bg-slate-900', 'bg-red-950');
+        document.querySelector('aside').classList.replace('bg-white', 'bg-red-950');
         document.getElementById('page-title').innerText = 'Super Admin Dashboard';
     }
 
@@ -133,12 +133,12 @@ const pages = { 'dashboard': 'System Dashboard', 'upload': 'Secure Upload Center
 function nav(pageId) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('nav button').forEach(b => {
-        b.classList.remove('bg-slate-800', 'text-white', 'border-l-4', 'border-blue-500');
+        b.classList.remove('bg-gray-50', 'text-white', 'border-l-4', 'border-blue-500');
         b.classList.add('border-l-4', 'border-transparent');
     });
     document.getElementById(`page-${pageId}`).classList.add('active');
     const btn = document.getElementById(`nav-${pageId}`);
-    if(btn) { btn.classList.add('bg-slate-800', 'text-white', 'border-l-4', 'border-blue-500'); btn.classList.remove('border-transparent'); }
+    if(btn) { btn.classList.add('bg-gray-50', 'text-white', 'border-l-4', 'border-blue-500'); btn.classList.remove('border-transparent'); }
     
     if(currentRole === 'admin' && pageId === 'admin') {
         document.getElementById('page-title').innerText = 'Super Admin Console';
@@ -245,7 +245,7 @@ async function fetchSecurityLogs() {
             if (l.event_type.includes('FAILED') || l.event_type.includes('LOCKED')) color = 'text-yellow-400';
             if (l.event_type.includes('MALWARE')) color = 'text-red-500 bg-red-900/30 p-1 rounded font-bold uppercase';
             
-            feed.innerHTML += `<div class="${color} mb-1 text-xs">[${time}] <b class="mr-1">${l.event_type}</b> <span class="text-slate-400">(${l.username}):</span> ${l.details}</div>`;
+            feed.innerHTML += `<div class="${color} mb-1 text-xs">[${time}] <b class="mr-1">${l.event_type}</b> <span class="text-gray-500">(${l.username}):</span> ${l.details}</div>`;
         });
         
         while(feed.children.length > 50) {
@@ -256,7 +256,7 @@ async function fetchSecurityLogs() {
 
 async function fetchLogs() {
     const tbody = document.getElementById('logs-body');
-    tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400">Loading SQLite DB records...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">Loading SQLite DB records...</td></tr>';
     
     try {
         const res = await fetch(`${API_URL}/logs`, { headers: getHeaders() });
@@ -267,7 +267,7 @@ async function fetchLogs() {
 
         document.getElementById('stat-files').innerText = files.length;
         tbody.innerHTML = '';
-        if(files.length === 0) tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400">Database is empty</td></tr>';
+        if(files.length === 0) tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">Database is empty</td></tr>';
 
         files.forEach(f => {
             const expires = f.expires_at ? new Date(f.expires_at).toLocaleTimeString() : 'Never';
@@ -279,11 +279,11 @@ async function fetchLogs() {
             }
 
             tbody.innerHTML += `
-                <tr class="hover:bg-slate-800 transition border-b border-slate-700">
-                    <td class="p-4 text-slate-400 font-bold">#${f.id}</td>
-                    <td class="p-4 text-slate-300 text-sm">${f.original_name}</td>
-                    <td class="p-4 text-slate-400 font-mono text-xs"><i class="fa-solid fa-lock text-slate-300 mr-2"></i> ${f.encrypted_name}</td>
-                    <td class="p-4 text-slate-500 text-sm"><i class="fa-solid fa-user-shield text-blue-400 mr-1"></i> ${f.uploader} <br><span class="text-xs text-red-400">Expires: ${expires}</span></td>
+                <tr class="hover:bg-gray-50 transition border-b border-gray-200">
+                    <td class="p-4 text-gray-500 font-bold">#${f.id}</td>
+                    <td class="p-4 text-gray-700 text-sm">${f.original_name}</td>
+                    <td class="p-4 text-gray-500 font-mono text-xs"><i class="fa-solid fa-lock text-gray-700 mr-2"></i> ${f.encrypted_name}</td>
+                    <td class="p-4 text-gray-400 text-sm"><i class="fa-solid fa-user-shield text-blue-400 mr-1"></i> ${f.uploader} <br><span class="text-xs text-red-800">Expires: ${expires}</span></td>
                     <td class="p-4 text-right">
                         ${actionBtns}
                     </td>
@@ -299,7 +299,7 @@ async function fetchLogs() {
 async function fetchUsers() {
     if (currentRole !== 'admin') return;
     const tbody = document.getElementById('users-body');
-    tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400">Loading users...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">Loading users...</td></tr>';
     
     try {
         const res = await fetch(`${API_URL}/users`, { headers: getHeaders() });
@@ -307,16 +307,16 @@ async function fetchUsers() {
         tbody.innerHTML = '';
         
         users.forEach(u => {
-            const rowColor = u.role === 'admin' ? 'bg-red-900/20' : 'hover:bg-slate-800';
-            const roleBadge = u.role === 'admin' ? '<span class="bg-red-600 text-white text-xs px-2 py-1 rounded">ADMIN</span>' : '<span class="bg-slate-700 text-slate-300 text-xs px-2 py-1 rounded">Employee</span>';
+            const rowColor = u.role === 'admin' ? 'bg-red-50/50' : 'hover:bg-gray-50';
+            const roleBadge = u.role === 'admin' ? '<span class="bg-red-600 text-white text-xs px-2 py-1 rounded">ADMIN</span>' : '<span class="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded">Employee</span>';
             const actionBtn = u.role === 'admin' ? '' : `<button onclick="deleteUser('${u.username}')" class="text-white bg-red-500 hover:bg-red-600 text-sm font-bold px-3 py-1 rounded shadow-sm transition"><i class="fa-solid fa-trash-can"></i> Terminate</button>`;
             
             tbody.innerHTML += `
-                <tr class="transition border-b border-slate-700 ${rowColor}">
-                    <td class="p-4 text-slate-400 font-bold">#${u.id}</td>
-                    <td class="p-4 text-slate-200 font-medium">${u.username}</td>
+                <tr class="transition border-b border-gray-200 ${rowColor}">
+                    <td class="p-4 text-gray-500 font-bold">#${u.id}</td>
+                    <td class="p-4 text-gray-800 font-medium">${u.username}</td>
                     <td class="p-4">${roleBadge}</td>
-                    <td class="p-4 text-slate-400 text-sm">${u.failed_attempts} fails</td>
+                    <td class="p-4 text-gray-500 text-sm">${u.failed_attempts} fails</td>
                     <td class="p-4 text-right">${actionBtn}</td>
                 </tr>
             `;
@@ -410,14 +410,14 @@ async function handleFileFetch(uploader, filename, isPreview) {
             const container = document.getElementById('preview-content');
             
             if (origName.toLowerCase().endsWith('.png') || origName.toLowerCase().endsWith('.jpg') || origName.toLowerCase().endsWith('.jpeg')) {
-                container.insertAdjacentHTML('beforeend', `<div class="preview-card relative w-full min-w-[800px] h-full flex-shrink-0 bg-slate-900 border border-slate-700 shadow-xl rounded-xl overflow-hidden flex flex-col"><div class="bg-slate-800 border-b border-slate-700 px-4 py-3 text-sm font-medium text-slate-300 flex justify-between items-center"><span class="truncate">${origName}</span><button onclick="this.closest('.preview-card').remove()" class="text-slate-500 hover:text-red-400 ml-2 transition"><i class="fa-solid fa-xmark"></i></button></div><div class="flex-1 p-0 overflow-auto bg-slate-950 cursor-zoom-in"><img src="${url}" class="w-full max-w-none h-auto block hover:w-[150%] transition-all duration-300" title="Scroll & Hover to Zoom" alt="Preview"></div></div>`);
+                container.insertAdjacentHTML('beforeend', `<div class="preview-card relative w-full min-w-[800px] h-full flex-shrink-0 bg-white border border-gray-200 shadow-xl rounded-xl overflow-hidden flex flex-col"><div class="bg-gray-50 border-b border-gray-200 px-4 py-3 text-sm font-medium text-gray-700 flex justify-between items-center"><span class="truncate">${origName}</span><button onclick="this.closest('.preview-card').remove()" class="text-gray-400 hover:text-red-800 ml-2 transition"><i class="fa-solid fa-xmark"></i></button></div><div class="flex-1 p-0 overflow-auto bg-gray-100 cursor-zoom-in"><img src="${url}" class="w-full max-w-none h-auto block hover:w-[150%] transition-all duration-300" title="Scroll & Hover to Zoom" alt="Preview"></div></div>`);
             } else if (origName.toLowerCase().endsWith('.pdf')) {
-                container.insertAdjacentHTML('beforeend', `<div class="preview-card relative w-full min-w-[800px] h-full flex-shrink-0 bg-slate-900 border border-slate-700 shadow-xl rounded-xl overflow-hidden flex flex-col"><div class="bg-slate-800 border-b border-slate-700 px-4 py-3 text-sm font-medium text-slate-300 flex justify-between items-center"><span class="truncate">${origName}</span><button onclick="this.closest('.preview-card').remove()" class="text-slate-500 hover:text-red-400 ml-2 transition"><i class="fa-solid fa-xmark"></i></button></div><iframe src="${url}" class="flex-1 w-full h-full border-0 bg-white"></iframe></div>`);
+                container.insertAdjacentHTML('beforeend', `<div class="preview-card relative w-full min-w-[800px] h-full flex-shrink-0 bg-white border border-gray-200 shadow-xl rounded-xl overflow-hidden flex flex-col"><div class="bg-gray-50 border-b border-gray-200 px-4 py-3 text-sm font-medium text-gray-700 flex justify-between items-center"><span class="truncate">${origName}</span><button onclick="this.closest('.preview-card').remove()" class="text-gray-400 hover:text-red-800 ml-2 transition"><i class="fa-solid fa-xmark"></i></button></div><iframe src="${url}" class="flex-1 w-full h-full border-0 bg-white"></iframe></div>`);
             } else {
                 const text = await blob.text();
                 // Escape HTML for safety
                 const safeText = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                container.insertAdjacentHTML('beforeend', `<div class="preview-card relative w-full min-w-[800px] h-full flex-shrink-0 bg-slate-900 border border-slate-700 shadow-xl rounded-xl overflow-hidden flex flex-col"><div class="bg-slate-800 border-b border-slate-700 px-4 py-3 text-sm font-medium text-slate-300 flex justify-between items-center"><span class="truncate">${origName}</span><button onclick="this.closest('.preview-card').remove()" class="text-slate-500 hover:text-red-400 ml-2 transition"><i class="fa-solid fa-xmark"></i></button></div><div class="flex-1 p-6 overflow-auto text-sm whitespace-pre-wrap font-mono text-slate-300 text-left bg-slate-950">${safeText}</div></div>`);
+                container.insertAdjacentHTML('beforeend', `<div class="preview-card relative w-full min-w-[800px] h-full flex-shrink-0 bg-white border border-gray-200 shadow-xl rounded-xl overflow-hidden flex flex-col"><div class="bg-gray-50 border-b border-gray-200 px-4 py-3 text-sm font-medium text-gray-700 flex justify-between items-center"><span class="truncate">${origName}</span><button onclick="this.closest('.preview-card').remove()" class="text-gray-400 hover:text-red-800 ml-2 transition"><i class="fa-solid fa-xmark"></i></button></div><div class="flex-1 p-6 overflow-auto text-sm whitespace-pre-wrap font-mono text-gray-700 text-left bg-gray-100">${safeText}</div></div>`);
             }
             
             document.getElementById('preview-modal').classList.remove('hidden');
@@ -452,14 +452,14 @@ let vm2Chart, vm3Chart, storageChart;
 function initCharts() {
     const ctx2 = document.getElementById('vm2Chart').getContext('2d');
     const ctx3 = document.getElementById('vm3Chart').getContext('2d');
-    const opts = { type: 'line', data: { labels: ['','','','',''], datasets: [{ label:'Load', data:[0,0,0,0,0], borderColor: '#4f46e5', tension: 0.4, borderWidth: 2, pointBackgroundColor: '#4f46e5' }] }, options: { animation: false, scales: { x: { grid: { color: '#334155' } }, y: { min: 0, max: 5, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } } }, plugins:{legend:{display:false}} } };
+    const opts = { type: 'line', data: { labels: ['','','','',''], datasets: [{ label:'Load', data:[0,0,0,0,0], borderColor: '#4f46e5', tension: 0.4, borderWidth: 2, pointBackgroundColor: '#4f46e5' }] }, options: { animation: false, scales: { x: { grid: { color: '#334155' } }, y: { min: 0, max: 5, grid: { color: '#334155' }, ticks: { color: '#6b7280' } } }, plugins:{legend:{display:false}} } };
     
     vm2Chart = new Chart(ctx2, JSON.parse(JSON.stringify(opts)));
     opts.data.datasets[0].borderColor = '#10b981';
     vm3Chart = new Chart(ctx3, opts);
 
     const ctxStore = document.getElementById('storageChart').getContext('2d');
-    storageChart = new Chart(ctxStore, { type: 'doughnut', data: { labels: ['Used', 'Free'], datasets: [{ data: [1, 99], backgroundColor: ['#4f46e5', '#1e293b'], borderWidth: 0 }] }, options: { cutout: '80%', plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
+    storageChart = new Chart(ctxStore, { type: 'doughnut', data: { labels: ['Used', 'Free'], datasets: [{ data: [1, 99], backgroundColor: ['#4f46e5', '#e5e7eb'], borderWidth: 0 }] }, options: { cutout: '80%', plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
 }
 
 async function updateDashboard() {
@@ -478,10 +478,10 @@ async function updateDashboard() {
         document.getElementById('storage-used').innerText = `${((used/total)*100).toFixed(1)}%`;
 
         document.getElementById('specs-body').innerHTML = `
-            <tr class="hover:bg-slate-800 transition"><td class="py-3 font-bold text-slate-300">VM 2</td><td class="py-3 text-slate-500">${data.vm2.platform}</td><td class="py-3 text-slate-500">${data.vm2.nodeVersion}</td><td class="py-3 text-slate-500">${data.vm2.mem} MB</td><td class="py-3 text-slate-500 text-right">${data.vm2.uptime}</td></tr>
-            <tr class="hover:bg-slate-800 transition"><td class="py-3 font-bold text-slate-300">VM 3</td><td class="py-3 text-slate-500">${data.vm3.platform}</td><td class="py-3 text-slate-500">${data.vm3.nodeVersion}</td><td class="py-3 text-slate-500">${data.vm3.totalMem} MB</td><td class="py-3 text-slate-500 text-right">${data.vm3.uptime}</td></tr>
+            <tr class="hover:bg-gray-50 transition"><td class="py-3 font-bold text-gray-700">VM 2</td><td class="py-3 text-gray-400">${data.vm2.platform}</td><td class="py-3 text-gray-400">${data.vm2.nodeVersion}</td><td class="py-3 text-gray-400">${data.vm2.mem} MB</td><td class="py-3 text-gray-400 text-right">${data.vm2.uptime}</td></tr>
+            <tr class="hover:bg-gray-50 transition"><td class="py-3 font-bold text-gray-700">VM 3</td><td class="py-3 text-gray-400">${data.vm3.platform}</td><td class="py-3 text-gray-400">${data.vm3.nodeVersion}</td><td class="py-3 text-gray-400">${data.vm3.totalMem} MB</td><td class="py-3 text-gray-400 text-right">${data.vm3.uptime}</td></tr>
         `;
-        if(Math.random() > 0.8) logEvent(`SYSTEM: Health check OK. Latency: ${Math.floor(Math.random()*15+5)}ms`, 'text-slate-500');
+        if(Math.random() > 0.8) logEvent(`SYSTEM: Health check OK. Latency: ${Math.floor(Math.random()*15+5)}ms`, 'text-gray-400');
     } catch {
         document.getElementById('vm2-dot').className = 'w-2 h-2 rounded-full bg-red-500';
         document.getElementById('vm2-text').innerText = 'VM 2: Disconnected';
