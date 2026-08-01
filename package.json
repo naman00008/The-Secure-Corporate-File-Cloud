@@ -1,0 +1,12 @@
+{
+  "name": "secure-corporate-file-cloud",
+  "version": "1.0.0",
+  "description": "3-Tier Secure Corporate File Cloud with AES-256 Encryption & SOC Lockdown",
+  "main": "start-all.js",
+  "scripts": {
+    "build": "cd vm2_processor && npm install && cd ../vm3_vault && npm install",
+    "start": "node start-all.js"
+  },
+  "author": "Naman Vyas",
+  "license": "ISC"
+}

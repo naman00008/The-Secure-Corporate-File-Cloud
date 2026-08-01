@@ -380,4 +380,5 @@ app.delete('/api/users/:username', verifyToken, (req, res) => {
     });
 });
 
-app.listen(3000, () => console.log('VM 2 (Processor) running on port 3000 with Backups, Lockdown, Previews'));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`VM 2 (Processor) running on port ${PORT} with Backups, Lockdown, Previews`));
