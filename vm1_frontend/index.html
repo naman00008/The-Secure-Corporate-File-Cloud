@@ -24,24 +24,24 @@
 <body class="h-screen overflow-hidden flex antialiased">
 
     <!-- Auth Overlay (Persistent Login) -->
-    <div id="login-overlay" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
+    <div id="login-overlay" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center">
         <div class="w-full max-w-sm">
             <div class="text-center mb-8">
                 <div class="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-indigo-50 text-indigo-600 mb-4">
                     <i class="fa-solid fa-cloud text-xl"></i>
                 </div>
-                <h1 class="text-2xl font-semibold tracking-tight text-gray-900" id="auth-title">Sign in to Console</h1>
-                <p class="text-sm text-gray-500 mt-2" id="auth-subtitle">Enterprise Secure Vault</p>
+                <h1 class="text-2xl font-semibold tracking-tight text-slate-100" id="auth-title">Sign in to Console</h1>
+                <p class="text-sm text-slate-400 mt-2" id="auth-subtitle">Enterprise Secure Vault</p>
             </div>
             
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">Username</label>
-                    <input type="text" id="username" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Username</label>
+                    <input type="text" id="username" class="w-full px-3 py-2 border border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">Password</label>
-                    <input type="password" id="password" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Password</label>
+                    <input type="password" id="password" class="w-full px-3 py-2 border border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                 </div>
                 <button id="auth-action-btn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">Sign in</button>
                 
@@ -59,30 +59,30 @@
     <div id="app-container" class="flex h-screen w-full hidden">
         
         <!-- Sidebar -->
-        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col justify-between flex-shrink-0 relative z-20">
+        <aside class="w-64 bg-slate-900 border-r border-slate-700 flex flex-col justify-between flex-shrink-0 relative z-20">
             <div>
-                <div class="h-16 flex items-center px-6 border-b border-gray-200">
-                    <div class="flex items-center text-gray-900 font-semibold tracking-tight">
+                <div class="h-16 flex items-center px-6 border-b border-slate-700">
+                    <div class="flex items-center text-slate-100 font-semibold tracking-tight">
                         <i class="fa-solid fa-cloud text-indigo-600 mr-2 text-lg"></i> Enterprise Vault
                     </div>
                 </div>
                 
                 <nav class="px-3 py-4 space-y-1">
-                    <button onclick="nav('dashboard')" id="nav-item-dashboard" class="nav-btn w-full flex items-center px-3 py-2 text-sm font-medium rounded-md bg-gray-100 text-gray-900 transition-colors">
-                        <i class="fa-solid fa-chart-line w-5 text-gray-500 mr-2"></i> Overview
+                    <button onclick="nav('dashboard')" id="nav-item-dashboard" class="nav-btn w-full flex items-center px-3 py-2 text-sm font-medium rounded-md bg-slate-950 text-slate-100 transition-colors">
+                        <i class="fa-solid fa-chart-line w-5 text-slate-400 mr-2"></i> Overview
                     </button>
-                    <button onclick="nav('upload')" id="nav-item-upload" class="nav-btn w-full flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                    <button onclick="nav('upload')" id="nav-item-upload" class="nav-btn w-full flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-slate-800 hover:text-slate-100 transition-colors">
                         <i class="fa-solid fa-arrow-up-from-bracket w-5 text-gray-400 mr-2"></i> Upload File
                     </button>
-                    <button onclick="nav('logs')" id="nav-item-logs" class="nav-btn w-full flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                    <button onclick="nav('logs')" id="nav-item-logs" class="nav-btn w-full flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-slate-800 hover:text-slate-100 transition-colors">
                         <i class="fa-solid fa-database w-5 text-gray-400 mr-2"></i> File Explorer
                     </button>
-                    <button onclick="nav('arch')" id="nav-item-arch" class="nav-btn w-full flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                    <button onclick="nav('arch')" id="nav-item-arch" class="nav-btn w-full flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-slate-800 hover:text-slate-100 transition-colors">
                         <i class="fa-solid fa-sitemap w-5 text-gray-400 mr-2"></i> Infrastructure
                     </button>
                     
                     <div class="pt-4 pb-1">
-                        <div class="border-t border-gray-200 my-1"></div>
+                        <div class="border-t border-slate-700 my-1"></div>
                     </div>
                     
                     <button onclick="nav('admin'); fetchUsers();" id="nav-item-admin" class="hidden nav-btn w-full flex items-center px-3 py-2 text-sm font-medium rounded-md text-red-600 hover:bg-red-50 transition-colors">
@@ -91,8 +91,8 @@
                 </nav>
             </div>
 
-            <div class="p-4 border-t border-gray-200 bg-gray-50">
-                <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2">System Status</p>
+            <div class="p-4 border-t border-slate-700 bg-slate-800">
+                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">System Status</p>
                 <div class="flex items-center text-xs text-gray-600 mb-1">
                     <div class="w-1.5 h-1.5 rounded-full bg-green-500 mr-2"></div> Gateway: Online
                 </div>
@@ -103,33 +103,33 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-gray-50 relative z-10">
+        <main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-800 relative z-10">
             
             <!-- Top Header -->
-            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 flex-shrink-0">
-                <h2 id="page-title" class="text-lg font-semibold text-gray-900">Overview</h2>
+            <header class="h-16 bg-slate-900 border-b border-slate-700 flex items-center justify-between px-8 flex-shrink-0">
+                <h2 id="page-title" class="text-lg font-semibold text-slate-100">Overview</h2>
                 <div class="flex items-center space-x-4">
-                    <button onclick="triggerBackup()" id="btn-backup" class="text-gray-500 hover:text-gray-900 text-sm font-medium transition-colors px-2 py-1 rounded-md hover:bg-gray-100 flex items-center"><i class="fa-solid fa-download mr-1.5"></i> Export Backup</button>
+                    <button onclick="triggerBackup()" id="btn-backup" class="text-slate-400 hover:text-slate-100 text-sm font-medium transition-colors px-2 py-1 rounded-md hover:bg-slate-950 flex items-center"><i class="fa-solid fa-download mr-1.5"></i> Export Backup</button>
                     <button onclick="toggleLockdown()" id="btn-lockdown" class="text-red-600 hover:text-red-800 text-sm font-medium transition-colors px-2 py-1 rounded-md hover:bg-red-50 border border-transparent flex items-center"><i class="fa-solid fa-lock mr-1.5"></i> Lockdown</button>
                     
                     <div class="h-5 w-px bg-gray-200 mx-1"></div>
                     
                     <div class="relative group">
                         <button class="flex items-center space-x-2 text-sm focus:outline-none pl-2">
-                            <img src="https://ui-avatars.com/api/?name=User&background=f3f4f6&color=111827" id="display-avatar" class="w-7 h-7 rounded-full border border-gray-200">
-                            <span id="display-user" class="font-medium text-gray-700">Loading...</span>
+                            <img src="https://ui-avatars.com/api/?name=User&background=f3f4f6&color=111827" id="display-avatar" class="w-7 h-7 rounded-full border border-slate-700">
+                            <span id="display-user" class="font-medium text-slate-300">Loading...</span>
                             <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
                         </button>
                         
                         <!-- Dropdown menu -->
-                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right z-50">
+                        <div class="absolute right-0 mt-2 w-48 bg-slate-900 rounded-md shadow-lg py-1 border border-slate-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right z-50">
                             <div class="px-4 py-2 border-b border-gray-100">
-                                <p class="text-xs text-gray-500">Signed in as</p>
-                                <p class="text-sm font-medium text-gray-900 truncate" id="dropdown-user">user</p>
+                                <p class="text-xs text-slate-400">Signed in as</p>
+                                <p class="text-sm font-medium text-slate-100 truncate" id="dropdown-user">user</p>
                             </div>
                             <span id="admin-badge" class="hidden px-4 py-1 mt-1 mx-2 text-[10px] font-bold tracking-wider text-red-600 bg-red-50 border border-red-100 rounded inline-block">ADMIN</span>
                             <div class="border-t border-gray-100 mt-1"></div>
-                            <button onclick="logout()" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">Sign out</button>
+                            <button onclick="logout()" class="w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 transition-colors">Sign out</button>
                         </div>
                     </div>
                 </div>
@@ -143,14 +143,14 @@
 
             <!-- In-App Preview Modal -->
             <div id="preview-modal" class="fixed inset-0 bg-gray-900/50 hidden z-50 flex items-center justify-center p-4 sm:p-6">
-                <div class="bg-white w-full max-w-6xl h-[85vh] flex flex-col rounded-xl shadow-2xl overflow-hidden transform transition-all">
-                    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
-                        <h3 class="font-medium text-gray-900" id="preview-title">Document Viewer <span class="text-xs text-gray-500 ml-2 font-normal">(Viewing multiple files side-by-side)</span></h3>
-                        <button onclick="document.getElementById('preview-content').innerHTML=''; document.getElementById('preview-modal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-md hover:bg-gray-200">
+                <div class="bg-slate-900 w-full max-w-6xl h-[85vh] flex flex-col rounded-xl shadow-2xl overflow-hidden transform transition-all">
+                    <div class="px-6 py-4 border-b border-slate-700 flex justify-between items-center bg-slate-800">
+                        <h3 class="font-medium text-slate-100" id="preview-title">Document Viewer <span class="text-xs text-slate-400 ml-2 font-normal">(Viewing multiple files side-by-side)</span></h3>
+                        <button onclick="document.getElementById('preview-content').innerHTML=''; document.getElementById('preview-modal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-md hover:bg-slate-700">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
-                    <div class="flex-1 p-6 bg-gray-100 flex flex-row space-x-4 overflow-x-auto items-start justify-start" id="preview-content">
+                    <div class="flex-1 p-6 bg-slate-950 flex flex-row space-x-4 overflow-x-auto items-start justify-start" id="preview-content">
                         <!-- Content Injected Here -->
                     </div>
                 </div>
@@ -164,7 +164,7 @@
                     
                     <!-- KPI Metrics -->
                     <div class="grid grid-cols-1 gap-5 sm:grid-cols-3 mb-6">
-                        <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
+                        <div class="bg-slate-900 overflow-hidden shadow-sm rounded-lg border border-slate-700">
                             <div class="p-5">
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 bg-indigo-50 rounded-md p-3">
@@ -172,15 +172,15 @@
                                     </div>
                                     <div class="ml-5 w-0 flex-1">
                                         <dl>
-                                            <dt class="text-sm font-medium text-gray-500 truncate">Total Stored Files</dt>
-                                            <dd class="text-2xl font-semibold text-gray-900" id="stat-files">0</dd>
+                                            <dt class="text-sm font-medium text-slate-400 truncate">Total Stored Files</dt>
+                                            <dd class="text-2xl font-semibold text-slate-100" id="stat-files">0</dd>
                                         </dl>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
+                        <div class="bg-slate-900 overflow-hidden shadow-sm rounded-lg border border-slate-700">
                             <div class="p-5">
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 bg-green-50 rounded-md p-3">
@@ -188,15 +188,15 @@
                                     </div>
                                     <div class="ml-5 w-0 flex-1">
                                         <dl>
-                                            <dt class="text-sm font-medium text-gray-500 truncate">Encryption Standard</dt>
-                                            <dd class="text-lg font-semibold text-gray-900 mt-1">AES-256</dd>
+                                            <dt class="text-sm font-medium text-slate-400 truncate">Encryption Standard</dt>
+                                            <dd class="text-lg font-semibold text-slate-100 mt-1">AES-256</dd>
                                         </dl>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
+                        <div class="bg-slate-900 overflow-hidden shadow-sm rounded-lg border border-slate-700">
                             <div class="p-5">
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 bg-blue-50 rounded-md p-3">
@@ -204,8 +204,8 @@
                                     </div>
                                     <div class="ml-5 w-0 flex-1">
                                         <dl>
-                                            <dt class="text-sm font-medium text-gray-500 truncate">Storage Usage</dt>
-                                            <dd class="text-2xl font-semibold text-gray-900" id="storage-used">0%</dd>
+                                            <dt class="text-sm font-medium text-slate-400 truncate">Storage Usage</dt>
+                                            <dd class="text-2xl font-semibold text-slate-100" id="storage-used">0%</dd>
                                         </dl>
                                     </div>
                                 </div>
@@ -216,21 +216,21 @@
                     <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
                         <!-- System Load Charts -->
                         <div class="lg:col-span-2 space-y-6">
-                            <div class="bg-white shadow-sm rounded-lg border border-gray-200 p-5">
-                                <h3 class="text-base font-medium text-gray-900 mb-4">Processor Utilization (VM 2)</h3>
+                            <div class="bg-slate-900 shadow-sm rounded-lg border border-slate-700 p-5">
+                                <h3 class="text-base font-medium text-slate-100 mb-4">Processor Utilization (VM 2)</h3>
                                 <canvas id="vm2Chart" height="90"></canvas>
                             </div>
-                            <div class="bg-white shadow-sm rounded-lg border border-gray-200 p-5">
-                                <h3 class="text-base font-medium text-gray-900 mb-4">Storage IO Utilization (VM 3)</h3>
+                            <div class="bg-slate-900 shadow-sm rounded-lg border border-slate-700 p-5">
+                                <h3 class="text-base font-medium text-slate-100 mb-4">Storage IO Utilization (VM 3)</h3>
                                 <canvas id="vm3Chart" height="90"></canvas>
                             </div>
                         </div>
 
                         <!-- System Activity Feed -->
                         <div class="lg:col-span-1">
-                            <div class="bg-white shadow-sm rounded-lg border border-gray-200 flex flex-col h-full">
-                                <div class="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
-                                    <h3 class="text-base font-medium text-gray-900">Activity Log</h3>
+                            <div class="bg-slate-900 shadow-sm rounded-lg border border-slate-700 flex flex-col h-full">
+                                <div class="px-5 py-4 border-b border-slate-700 flex items-center justify-between">
+                                    <h3 class="text-base font-medium text-slate-100">Activity Log</h3>
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
                                         Live
                                     </span>
@@ -239,7 +239,7 @@
                                     <ul id="activity-feed" class="space-y-4">
                                         <li class="flex text-sm">
                                             <div class="flex-shrink-0 mt-0.5"><i class="fa-solid fa-circle-info text-gray-400 text-xs"></i></div>
-                                            <div class="ml-3"><p class="text-gray-500">System initialized.</p></div>
+                                            <div class="ml-3"><p class="text-slate-400">System initialized.</p></div>
                                         </li>
                                     </ul>
                                 </div>
@@ -248,23 +248,23 @@
                     </div>
                     
                     <!-- Specifications Table -->
-                    <div class="mt-6 bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
-                        <div class="px-5 py-4 border-b border-gray-200">
-                            <h3 class="text-base font-medium text-gray-900">Infrastructure Details</h3>
+                    <div class="mt-6 bg-slate-900 shadow-sm rounded-lg border border-slate-700 overflow-hidden">
+                        <div class="px-5 py-4 border-b border-slate-700">
+                            <h3 class="text-base font-medium text-slate-100">Infrastructure Details</h3>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
+                                <thead class="bg-slate-800">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Node</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">OS Platform</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Engine</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Memory</th>
-                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Uptime</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Node</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">OS Platform</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Engine</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Memory</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Uptime</th>
                                     </tr>
                                 </thead>
-                                <tbody id="specs-body" class="bg-white divide-y divide-gray-200">
-                                    <tr><td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">Loading infrastructure data...</td></tr>
+                                <tbody id="specs-body" class="bg-slate-900 divide-y divide-gray-200">
+                                    <tr><td colspan="5" class="px-6 py-4 text-center text-sm text-slate-400">Loading infrastructure data...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -273,28 +273,28 @@
 
                 <!-- PAGE: Upload Center -->
                 <div id="page-upload" class="page max-w-2xl mx-auto mt-4">
-                    <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden p-8 text-center">
-                        <h2 class="text-2xl font-semibold text-gray-900 mb-2">Upload a File</h2>
-                        <p class="text-sm text-gray-500 mb-8">Files are encrypted with AES-256 before being written to persistent storage.</p>
+                    <div class="bg-slate-900 shadow-sm rounded-lg border border-slate-700 overflow-hidden p-8 text-center">
+                        <h2 class="text-2xl font-semibold text-slate-100 mb-2">Upload a File</h2>
+                        <p class="text-sm text-slate-400 mb-8">Files are encrypted with AES-256 before being written to persistent storage.</p>
                         
-                        <div id="drop-zone" class="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:bg-gray-50 hover:border-indigo-500 transition-colors cursor-pointer group">
+                        <div id="drop-zone" class="border-2 border-dashed border-slate-600 rounded-lg p-12 text-center hover:bg-slate-800 hover:border-indigo-500 transition-colors cursor-pointer group">
                             <div class="mx-auto h-12 w-12 text-gray-400 group-hover:text-indigo-500 transition-colors">
                                 <i class="fa-solid fa-arrow-up-from-bracket text-4xl"></i>
                             </div>
-                            <h3 class="mt-4 text-sm font-medium text-gray-900">Click or drag a file to this area</h3>
-                            <p class="mt-1 text-xs text-gray-500">Maximum file size: 50MB</p>
+                            <h3 class="mt-4 text-sm font-medium text-slate-100">Click or drag a file to this area</h3>
+                            <p class="mt-1 text-xs text-slate-400">Maximum file size: 50MB</p>
                             <input type="file" id="file-input" class="hidden" multiple>
                         </div>
 
-                        <div id="upload-ui" class="hidden mt-8 text-left bg-gray-50 p-5 rounded-lg border border-gray-200">
+                        <div id="upload-ui" class="hidden mt-8 text-left bg-slate-800 p-5 rounded-lg border border-slate-700">
                             <div class="flex items-start justify-between mb-5">
                                 <div>
-                                    <p class="text-xs font-medium text-gray-500 uppercase">Selected File</p>
-                                    <p id="file-name" class="mt-1 text-sm font-medium text-gray-900 truncate pr-4"></p>
+                                    <p class="text-xs font-medium text-slate-400 uppercase">Selected File</p>
+                                    <p id="file-name" class="mt-1 text-sm font-medium text-slate-100 truncate pr-4"></p>
                                 </div>
                                 <div class="flex-shrink-0">
-                                    <p class="text-xs font-medium text-gray-500 uppercase mb-1">Retention</p>
-                                    <select id="ttl-select" class="block w-full pl-3 pr-8 py-1.5 text-sm border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md shadow-sm bg-white">
+                                    <p class="text-xs font-medium text-slate-400 uppercase mb-1">Retention</p>
+                                    <select id="ttl-select" class="block w-full pl-3 pr-8 py-1.5 text-sm border-slate-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md shadow-sm bg-slate-900">
                                         <option value="">Permanent</option>
                                         <option value="60000">1 Minute (Demo)</option>
                                         <option value="3600000">1 Hour</option>
@@ -308,7 +308,7 @@
                             
                             <div id="progress-area" class="hidden mt-4">
                                 <div class="flex justify-between text-xs mb-1">
-                                    <span id="progress-text" class="text-gray-700 font-medium"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Processing...</span>
+                                    <span id="progress-text" class="text-slate-300 font-medium"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Processing...</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-1.5">
                                     <div id="progress-bar" class="bg-indigo-600 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
@@ -320,26 +320,26 @@
 
                 <!-- PAGE: Vault Logs -->
                 <div id="page-logs" class="page max-w-6xl mx-auto">
-                    <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
-                        <div class="px-6 py-5 border-b border-gray-200 flex justify-between items-center bg-white">
+                    <div class="bg-slate-900 shadow-sm rounded-lg border border-slate-700 overflow-hidden">
+                        <div class="px-6 py-5 border-b border-slate-700 flex justify-between items-center bg-slate-900">
                             <div>
-                                <h2 class="text-lg font-semibold text-gray-900">File Explorer</h2>
-                                <p class="text-sm text-gray-500 mt-1">Files currently persisted in the backend database.</p>
+                                <h2 class="text-lg font-semibold text-slate-100">File Explorer</h2>
+                                <p class="text-sm text-slate-400 mt-1">Files currently persisted in the backend database.</p>
                                 <p id="admin-log-notice" class="hidden text-xs font-medium text-red-600 mt-2 bg-red-50 inline-block px-2 py-1 rounded border border-red-100"><i class="fa-solid fa-circle-exclamation mr-1"></i> Admin Console: Viewing all company records.</p>
                             </div>
-                            <button onclick="fetchLogs()" class="text-sm text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 font-medium px-4 py-2 rounded-md transition-colors shadow-sm"><i class="fa-solid fa-rotate-right mr-1.5"></i> Refresh Data</button>
+                            <button onclick="fetchLogs()" class="text-sm text-slate-300 bg-slate-900 border border-slate-600 hover:bg-slate-800 font-medium px-4 py-2 rounded-md transition-colors shadow-sm"><i class="fa-solid fa-rotate-right mr-1.5"></i> Refresh Data</button>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
+                                <thead class="bg-slate-800">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File Name</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Internal Reference</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Owner</th>
-                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">File Name</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Internal Reference</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Owner</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody id="logs-body" class="bg-white divide-y divide-gray-200">
+                                <tbody id="logs-body" class="bg-slate-900 divide-y divide-gray-200">
                                     <!-- Injected by JS -->
                                 </tbody>
                             </table>
@@ -349,28 +349,28 @@
 
                 <!-- PAGE: Admin Console -->
                 <div id="page-admin" class="page max-w-5xl mx-auto">
-                    <div class="bg-white shadow-sm rounded-lg border border-red-200 overflow-hidden">
-                        <div class="px-6 py-5 border-b border-gray-200 flex justify-between items-center bg-red-50">
+                    <div class="bg-slate-900 shadow-sm rounded-lg border border-red-200 overflow-hidden">
+                        <div class="px-6 py-5 border-b border-slate-700 flex justify-between items-center bg-red-50">
                             <div>
                                 <h2 class="text-lg font-semibold text-red-800 flex items-center"><i class="fa-solid fa-shield mr-2"></i> User Management Console</h2>
                                 <p class="text-sm text-red-600 mt-1">Administrative oversight and account management.</p>
                             </div>
                             <div class="space-x-2">
-                                <button onclick="exportLogs()" class="text-sm text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 font-medium px-3 py-1.5 rounded-md transition-colors shadow-sm"><i class="fa-solid fa-download mr-1.5"></i> Export Report</button>
-                                <button onclick="fetchUsers()" class="text-sm text-red-700 bg-white border border-red-200 hover:bg-red-50 font-medium px-3 py-1.5 rounded-md transition-colors shadow-sm"><i class="fa-solid fa-rotate-right mr-1.5"></i> Refresh</button>
+                                <button onclick="exportLogs()" class="text-sm text-slate-300 bg-slate-900 border border-slate-600 hover:bg-slate-800 font-medium px-3 py-1.5 rounded-md transition-colors shadow-sm"><i class="fa-solid fa-download mr-1.5"></i> Export Report</button>
+                                <button onclick="fetchUsers()" class="text-sm text-red-700 bg-slate-900 border border-red-200 hover:bg-red-50 font-medium px-3 py-1.5 rounded-md transition-colors shadow-sm"><i class="fa-solid fa-rotate-right mr-1.5"></i> Refresh</button>
                             </div>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
+                                <thead class="bg-slate-800">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Auth Failures</th>
-                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Username</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Role</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Auth Failures</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody id="users-body" class="bg-white divide-y divide-gray-200">
+                                <tbody id="users-body" class="bg-slate-900 divide-y divide-gray-200">
                                     <!-- Injected by JS -->
                                 </tbody>
                             </table>
@@ -380,18 +380,18 @@
 
                 <!-- PAGE: Architecture Map -->
                 <div id="page-arch" class="page max-w-5xl mx-auto">
-                    <div class="bg-white shadow-sm rounded-lg border border-gray-200 p-8 text-center">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-10">Infrastructure Topology</h2>
+                    <div class="bg-slate-900 shadow-sm rounded-lg border border-slate-700 p-8 text-center">
+                        <h2 class="text-xl font-semibold text-slate-100 mb-10">Infrastructure Topology</h2>
                         <div class="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0 md:space-x-6">
                             
                             <!-- VM 1 -->
-                            <div class="flex-1 w-full bg-white border border-gray-200 p-6 rounded-lg shadow-sm">
+                            <div class="flex-1 w-full bg-slate-900 border border-slate-700 p-6 rounded-lg shadow-sm">
                                 <div class="inline-flex items-center justify-center h-12 w-12 rounded-md bg-indigo-50 text-indigo-600 mb-4">
                                     <i class="fa-solid fa-globe text-xl"></i>
                                 </div>
-                                <h3 class="text-base font-semibold text-gray-900">Web Gateway</h3>
-                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 mt-1 mb-3">Public Subnet</span>
-                                <p class="text-sm text-gray-500 leading-relaxed">Serves the compiled static frontend application and handles incoming client connections.</p>
+                                <h3 class="text-base font-semibold text-slate-100">Web Gateway</h3>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-950 text-gray-800 mt-1 mb-3">Public Subnet</span>
+                                <p class="text-sm text-slate-400 leading-relaxed">Serves the compiled static frontend application and handles incoming client connections.</p>
                             </div>
 
                             <div class="hidden md:flex text-gray-300">
@@ -399,16 +399,16 @@
                             </div>
 
                             <!-- VM 2 -->
-                            <div class="flex-1 w-full bg-white border border-indigo-100 p-6 rounded-lg shadow-md ring-1 ring-indigo-50 relative">
+                            <div class="flex-1 w-full bg-slate-900 border border-indigo-100 p-6 rounded-lg shadow-md ring-1 ring-indigo-50 relative">
                                 <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 border border-indigo-200">Core Engine</span>
                                 </div>
                                 <div class="inline-flex items-center justify-center h-12 w-12 rounded-md bg-indigo-50 text-indigo-600 mb-4 mt-2">
                                     <i class="fa-solid fa-microchip text-xl"></i>
                                 </div>
-                                <h3 class="text-base font-semibold text-gray-900">Processor Node</h3>
-                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 mt-1 mb-3">Private Subnet</span>
-                                <p class="text-sm text-gray-500 leading-relaxed">Handles JWT Authentication, strict Role-Based Access Control, and dynamic AES-256 encryption.</p>
+                                <h3 class="text-base font-semibold text-slate-100">Processor Node</h3>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-950 text-gray-800 mt-1 mb-3">Private Subnet</span>
+                                <p class="text-sm text-slate-400 leading-relaxed">Handles JWT Authentication, strict Role-Based Access Control, and dynamic AES-256 encryption.</p>
                             </div>
 
                             <div class="hidden md:flex text-gray-300">
@@ -416,13 +416,13 @@
                             </div>
 
                             <!-- VM 3 -->
-                            <div class="flex-1 w-full bg-white border border-gray-200 p-6 rounded-lg shadow-sm">
+                            <div class="flex-1 w-full bg-slate-900 border border-slate-700 p-6 rounded-lg shadow-sm">
                                 <div class="inline-flex items-center justify-center h-12 w-12 rounded-md bg-indigo-50 text-indigo-600 mb-4">
                                     <i class="fa-solid fa-vault text-xl"></i>
                                 </div>
-                                <h3 class="text-base font-semibold text-gray-900">Storage Vault</h3>
-                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 mt-1 mb-3">Isolated Subnet</span>
-                                <p class="text-sm text-gray-500 leading-relaxed">The secure backend. Hosts SQLite metadata ledgers and physically isolated block storage.</p>
+                                <h3 class="text-base font-semibold text-slate-100">Storage Vault</h3>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-950 text-gray-800 mt-1 mb-3">Isolated Subnet</span>
+                                <p class="text-sm text-slate-400 leading-relaxed">The secure backend. Hosts SQLite metadata ledgers and physically isolated block storage.</p>
                             </div>
                         </div>
                     </div>

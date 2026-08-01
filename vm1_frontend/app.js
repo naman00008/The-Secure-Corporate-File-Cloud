@@ -279,9 +279,9 @@ async function fetchLogs() {
             }
 
             tbody.innerHTML += `
-                <tr class="hover:bg-slate-50 transition border-b border-slate-50">
-                    <td class="p-4 text-slate-700 font-bold">#${f.id}</td>
-                    <td class="p-4 text-slate-700 text-sm">${f.original_name}</td>
+                <tr class="hover:bg-slate-800 transition border-b border-slate-50">
+                    <td class="p-4 text-slate-300 font-bold">#${f.id}</td>
+                    <td class="p-4 text-slate-300 text-sm">${f.original_name}</td>
                     <td class="p-4 text-slate-400 font-mono text-xs"><i class="fa-solid fa-lock text-slate-300 mr-2"></i> ${f.encrypted_name}</td>
                     <td class="p-4 text-slate-500 text-sm"><i class="fa-solid fa-user-shield text-blue-400 mr-1"></i> ${f.uploader} <br><span class="text-xs text-red-400">Expires: ${expires}</span></td>
                     <td class="p-4 text-right">
@@ -307,14 +307,14 @@ async function fetchUsers() {
         tbody.innerHTML = '';
         
         users.forEach(u => {
-            const rowColor = u.role === 'admin' ? 'bg-red-50/50' : 'hover:bg-slate-50';
-            const roleBadge = u.role === 'admin' ? '<span class="bg-red-600 text-white text-xs px-2 py-1 rounded">ADMIN</span>' : '<span class="bg-slate-200 text-slate-700 text-xs px-2 py-1 rounded">Employee</span>';
+            const rowColor = u.role === 'admin' ? 'bg-red-50/50' : 'hover:bg-slate-800';
+            const roleBadge = u.role === 'admin' ? '<span class="bg-red-600 text-white text-xs px-2 py-1 rounded">ADMIN</span>' : '<span class="bg-slate-200 text-slate-300 text-xs px-2 py-1 rounded">Employee</span>';
             const actionBtn = u.role === 'admin' ? '' : `<button onclick="deleteUser('${u.username}')" class="text-white bg-red-500 hover:bg-red-700 text-sm font-bold px-3 py-1 rounded shadow-sm"><i class="fa-solid fa-trash-can"></i> Terminate</button>`;
             
             tbody.innerHTML += `
                 <tr class="transition border-b border-slate-50 ${rowColor}">
-                    <td class="p-4 text-slate-700 font-bold">#${u.id}</td>
-                    <td class="p-4 text-slate-800 font-medium">${u.username}</td>
+                    <td class="p-4 text-slate-300 font-bold">#${u.id}</td>
+                    <td class="p-4 text-slate-200 font-medium">${u.username}</td>
                     <td class="p-4">${roleBadge}</td>
                     <td class="p-4 text-slate-500 text-sm">${u.failed_attempts} fails</td>
                     <td class="p-4 text-right">${actionBtn}</td>
@@ -410,14 +410,14 @@ async function handleFileFetch(uploader, filename, isPreview) {
             const container = document.getElementById('preview-content');
             
             if (origName.toLowerCase().endsWith('.png') || origName.toLowerCase().endsWith('.jpg') || origName.toLowerCase().endsWith('.jpeg')) {
-                container.insertAdjacentHTML('beforeend', `<div class="relative w-[450px] h-full flex-shrink-0 bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden flex flex-col"><div class="bg-slate-50 border-b border-slate-200 px-3 py-2 text-xs font-medium text-slate-700 truncate">${origName}</div><div class="flex-1 p-2 flex items-center justify-center overflow-hidden"><img src="${url}" class="max-w-full max-h-full object-contain"></div></div>`);
+                container.insertAdjacentHTML('beforeend', `<div class="relative w-[450px] h-full flex-shrink-0 bg-slate-900 border border-slate-700 shadow-sm rounded-lg overflow-hidden flex flex-col"><div class="bg-slate-800 border-b border-slate-700 px-3 py-2 text-xs font-medium text-slate-300 truncate">${origName}</div><div class="flex-1 p-2 flex items-center justify-center overflow-hidden"><img src="${url}" class="max-w-full max-h-full object-contain"></div></div>`);
             } else if (origName.toLowerCase().endsWith('.pdf')) {
-                container.insertAdjacentHTML('beforeend', `<div class="relative w-[450px] h-full flex-shrink-0 bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden flex flex-col"><div class="bg-slate-50 border-b border-slate-200 px-3 py-2 text-xs font-medium text-slate-700 truncate">${origName}</div><iframe src="${url}" class="flex-1 w-full border-0"></iframe></div>`);
+                container.insertAdjacentHTML('beforeend', `<div class="relative w-[450px] h-full flex-shrink-0 bg-slate-900 border border-slate-700 shadow-sm rounded-lg overflow-hidden flex flex-col"><div class="bg-slate-800 border-b border-slate-700 px-3 py-2 text-xs font-medium text-slate-300 truncate">${origName}</div><iframe src="${url}" class="flex-1 w-full border-0"></iframe></div>`);
             } else {
                 const text = await blob.text();
                 // Escape HTML for safety
                 const safeText = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                container.insertAdjacentHTML('beforeend', `<div class="relative w-[450px] h-full flex-shrink-0 bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden flex flex-col"><div class="bg-slate-50 border-b border-slate-200 px-3 py-2 text-xs font-medium text-slate-700 truncate">${origName}</div><div class="flex-1 p-4 overflow-auto text-xs whitespace-pre-wrap font-mono text-slate-800 text-left">${safeText}</div></div>`);
+                container.insertAdjacentHTML('beforeend', `<div class="relative w-[450px] h-full flex-shrink-0 bg-slate-900 border border-slate-700 shadow-sm rounded-lg overflow-hidden flex flex-col"><div class="bg-slate-800 border-b border-slate-700 px-3 py-2 text-xs font-medium text-slate-300 truncate">${origName}</div><div class="flex-1 p-4 overflow-auto text-xs whitespace-pre-wrap font-mono text-slate-200 text-left">${safeText}</div></div>`);
             }
             
             document.getElementById('preview-modal').classList.remove('hidden');
@@ -452,14 +452,14 @@ let vm2Chart, vm3Chart, storageChart;
 function initCharts() {
     const ctx2 = document.getElementById('vm2Chart').getContext('2d');
     const ctx3 = document.getElementById('vm3Chart').getContext('2d');
-    const opts = { type: 'line', data: { labels: ['','','','',''], datasets: [{ label:'Load', data:[0,0,0,0,0], borderColor: '#4f46e5', tension: 0.4, borderWidth: 2, pointBackgroundColor: '#4f46e5' }] }, options: { animation: false, scales: { x: { grid: { color: '#f3f4f6' } }, y: { min: 0, max: 5, grid: { color: '#f3f4f6' }, ticks: { color: '#6b7280' } } }, plugins:{legend:{display:false}} } };
+    const opts = { type: 'line', data: { labels: ['','','','',''], datasets: [{ label:'Load', data:[0,0,0,0,0], borderColor: '#4f46e5', tension: 0.4, borderWidth: 2, pointBackgroundColor: '#4f46e5' }] }, options: { animation: false, scales: { x: { grid: { color: '#334155' } }, y: { min: 0, max: 5, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } } }, plugins:{legend:{display:false}} } };
     
     vm2Chart = new Chart(ctx2, JSON.parse(JSON.stringify(opts)));
     opts.data.datasets[0].borderColor = '#10b981';
     vm3Chart = new Chart(ctx3, opts);
 
     const ctxStore = document.getElementById('storageChart').getContext('2d');
-    storageChart = new Chart(ctxStore, { type: 'doughnut', data: { labels: ['Used', 'Free'], datasets: [{ data: [1, 99], backgroundColor: ['#4f46e5', '#f3f4f6'], borderWidth: 0 }] }, options: { cutout: '80%', plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
+    storageChart = new Chart(ctxStore, { type: 'doughnut', data: { labels: ['Used', 'Free'], datasets: [{ data: [1, 99], backgroundColor: ['#4f46e5', '#1e293b'], borderWidth: 0 }] }, options: { cutout: '80%', plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
 }
 
 async function updateDashboard() {
@@ -478,8 +478,8 @@ async function updateDashboard() {
         document.getElementById('storage-used').innerText = `${((used/total)*100).toFixed(1)}%`;
 
         document.getElementById('specs-body').innerHTML = `
-            <tr class="hover:bg-slate-50 transition"><td class="py-3 font-bold text-slate-700">VM 2</td><td class="py-3 text-slate-500">${data.vm2.platform}</td><td class="py-3 text-slate-500">${data.vm2.nodeVersion}</td><td class="py-3 text-slate-500">${data.vm2.mem} MB</td><td class="py-3 text-slate-500 text-right">${data.vm2.uptime}</td></tr>
-            <tr class="hover:bg-slate-50 transition"><td class="py-3 font-bold text-slate-700">VM 3</td><td class="py-3 text-slate-500">${data.vm3.platform}</td><td class="py-3 text-slate-500">${data.vm3.nodeVersion}</td><td class="py-3 text-slate-500">${data.vm3.totalMem} MB</td><td class="py-3 text-slate-500 text-right">${data.vm3.uptime}</td></tr>
+            <tr class="hover:bg-slate-800 transition"><td class="py-3 font-bold text-slate-300">VM 2</td><td class="py-3 text-slate-500">${data.vm2.platform}</td><td class="py-3 text-slate-500">${data.vm2.nodeVersion}</td><td class="py-3 text-slate-500">${data.vm2.mem} MB</td><td class="py-3 text-slate-500 text-right">${data.vm2.uptime}</td></tr>
+            <tr class="hover:bg-slate-800 transition"><td class="py-3 font-bold text-slate-300">VM 3</td><td class="py-3 text-slate-500">${data.vm3.platform}</td><td class="py-3 text-slate-500">${data.vm3.nodeVersion}</td><td class="py-3 text-slate-500">${data.vm3.totalMem} MB</td><td class="py-3 text-slate-500 text-right">${data.vm3.uptime}</td></tr>
         `;
         if(Math.random() > 0.8) logEvent(`SYSTEM: Health check OK. Latency: ${Math.floor(Math.random()*15+5)}ms`, 'text-slate-500');
     } catch {
