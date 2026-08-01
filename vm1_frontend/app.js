@@ -108,7 +108,7 @@ function startApp() {
     if (currentRole === 'admin') {
         document.getElementById('admin-badge').classList.remove('hidden');
         document.getElementById('nav-item-admin').classList.remove('hidden');
-        document.querySelector('aside').classList.replace('bg-white', 'bg-red-950');
+        // No sidebar color change for admin in light theme
         document.getElementById('page-title').innerText = 'Super Admin Dashboard';
     }
 
