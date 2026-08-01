@@ -279,8 +279,8 @@ async function fetchLogs() {
             }
 
             tbody.innerHTML += `
-                <tr class="hover:bg-slate-800 transition border-b border-slate-50">
-                    <td class="p-4 text-slate-300 font-bold">#${f.id}</td>
+                <tr class="hover:bg-slate-800 transition border-b border-slate-700">
+                    <td class="p-4 text-slate-400 font-bold">#${f.id}</td>
                     <td class="p-4 text-slate-300 text-sm">${f.original_name}</td>
                     <td class="p-4 text-slate-400 font-mono text-xs"><i class="fa-solid fa-lock text-slate-300 mr-2"></i> ${f.encrypted_name}</td>
                     <td class="p-4 text-slate-500 text-sm"><i class="fa-solid fa-user-shield text-blue-400 mr-1"></i> ${f.uploader} <br><span class="text-xs text-red-400">Expires: ${expires}</span></td>
@@ -410,7 +410,7 @@ async function handleFileFetch(uploader, filename, isPreview) {
             const container = document.getElementById('preview-content');
             
             if (origName.toLowerCase().endsWith('.png') || origName.toLowerCase().endsWith('.jpg') || origName.toLowerCase().endsWith('.jpeg')) {
-                container.insertAdjacentHTML('beforeend', `<div class="preview-card relative w-full min-w-[800px] h-full flex-shrink-0 bg-slate-900 border border-slate-700 shadow-xl rounded-xl overflow-hidden flex flex-col"><div class="bg-slate-800 border-b border-slate-700 px-4 py-3 text-sm font-medium text-slate-300 flex justify-between items-center"><span class="truncate">${origName}</span><button onclick="this.closest('.preview-card').remove()" class="text-slate-500 hover:text-red-400 ml-2 transition"><i class="fa-solid fa-xmark"></i></button></div><div class="flex-1 p-0 overflow-auto bg-slate-950 cursor-zoom-in"><img src="${url}" class="w-full h-auto block hover:scale-[1.5] origin-top transition-transform duration-300" title="Scroll & Hover to Zoom" alt="Preview"></div></div>`);
+                container.insertAdjacentHTML('beforeend', `<div class="preview-card relative w-full min-w-[800px] h-full flex-shrink-0 bg-slate-900 border border-slate-700 shadow-xl rounded-xl overflow-hidden flex flex-col"><div class="bg-slate-800 border-b border-slate-700 px-4 py-3 text-sm font-medium text-slate-300 flex justify-between items-center"><span class="truncate">${origName}</span><button onclick="this.closest('.preview-card').remove()" class="text-slate-500 hover:text-red-400 ml-2 transition"><i class="fa-solid fa-xmark"></i></button></div><div class="flex-1 p-0 overflow-auto bg-slate-950 cursor-zoom-in"><img src="${url}" class="w-full max-w-none h-auto block hover:w-[150%] transition-all duration-300" title="Scroll & Hover to Zoom" alt="Preview"></div></div>`);
             } else if (origName.toLowerCase().endsWith('.pdf')) {
                 container.insertAdjacentHTML('beforeend', `<div class="preview-card relative w-full min-w-[800px] h-full flex-shrink-0 bg-slate-900 border border-slate-700 shadow-xl rounded-xl overflow-hidden flex flex-col"><div class="bg-slate-800 border-b border-slate-700 px-4 py-3 text-sm font-medium text-slate-300 flex justify-between items-center"><span class="truncate">${origName}</span><button onclick="this.closest('.preview-card').remove()" class="text-slate-500 hover:text-red-400 ml-2 transition"><i class="fa-solid fa-xmark"></i></button></div><iframe src="${url}" class="flex-1 w-full h-full border-0 bg-white"></iframe></div>`);
             } else {

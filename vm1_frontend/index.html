@@ -335,16 +335,17 @@
                             <button onclick="fetchLogs()" class="text-sm text-slate-300 bg-slate-900 border border-slate-600 hover:bg-slate-800 font-medium px-4 py-2 rounded-md transition-colors shadow-sm"><i class="fa-solid fa-rotate-right mr-1.5"></i> Refresh Data</button>
                         </div>
                         <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
+                            <table class="min-w-full divide-y divide-slate-700">
                                 <thead class="bg-slate-800">
                                     <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">ID</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">File Name</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Internal Reference</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Owner</th>
                                         <th class="px-6 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody id="logs-body" class="bg-slate-900 divide-y divide-gray-200">
+                                <tbody id="logs-body" class="bg-slate-900 divide-y divide-slate-700">
                                     <!-- Injected by JS -->
                                 </tbody>
                             </table>
