@@ -307,16 +307,16 @@ async function fetchUsers() {
         tbody.innerHTML = '';
         
         users.forEach(u => {
-            const rowColor = u.role === 'admin' ? 'bg-red-50/50' : 'hover:bg-slate-800';
-            const roleBadge = u.role === 'admin' ? '<span class="bg-red-600 text-white text-xs px-2 py-1 rounded">ADMIN</span>' : '<span class="bg-slate-200 text-slate-300 text-xs px-2 py-1 rounded">Employee</span>';
-            const actionBtn = u.role === 'admin' ? '' : `<button onclick="deleteUser('${u.username}')" class="text-white bg-red-500 hover:bg-red-700 text-sm font-bold px-3 py-1 rounded shadow-sm"><i class="fa-solid fa-trash-can"></i> Terminate</button>`;
+            const rowColor = u.role === 'admin' ? 'bg-red-900/20' : 'hover:bg-slate-800';
+            const roleBadge = u.role === 'admin' ? '<span class="bg-red-600 text-white text-xs px-2 py-1 rounded">ADMIN</span>' : '<span class="bg-slate-700 text-slate-300 text-xs px-2 py-1 rounded">Employee</span>';
+            const actionBtn = u.role === 'admin' ? '' : `<button onclick="deleteUser('${u.username}')" class="text-white bg-red-500 hover:bg-red-600 text-sm font-bold px-3 py-1 rounded shadow-sm transition"><i class="fa-solid fa-trash-can"></i> Terminate</button>`;
             
             tbody.innerHTML += `
-                <tr class="transition border-b border-slate-50 ${rowColor}">
-                    <td class="p-4 text-slate-300 font-bold">#${u.id}</td>
+                <tr class="transition border-b border-slate-700 ${rowColor}">
+                    <td class="p-4 text-slate-400 font-bold">#${u.id}</td>
                     <td class="p-4 text-slate-200 font-medium">${u.username}</td>
                     <td class="p-4">${roleBadge}</td>
-                    <td class="p-4 text-slate-500 text-sm">${u.failed_attempts} fails</td>
+                    <td class="p-4 text-slate-400 text-sm">${u.failed_attempts} fails</td>
                     <td class="p-4 text-right">${actionBtn}</td>
                 </tr>
             `;

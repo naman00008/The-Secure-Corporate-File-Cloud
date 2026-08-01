@@ -354,19 +354,19 @@
 
                 <!-- PAGE: Admin Console -->
                 <div id="page-admin" class="page max-w-5xl mx-auto">
-                    <div class="bg-slate-900 shadow-sm rounded-lg border border-red-200 overflow-hidden">
-                        <div class="px-6 py-5 border-b border-slate-700 flex justify-between items-center bg-red-50">
+                    <div class="bg-slate-900 shadow-sm rounded-lg border border-red-900 overflow-hidden">
+                        <div class="px-6 py-5 border-b border-slate-700 flex justify-between items-center bg-red-950/30">
                             <div>
-                                <h2 class="text-lg font-semibold text-red-800 flex items-center"><i class="fa-solid fa-shield mr-2"></i> User Management Console</h2>
-                                <p class="text-sm text-red-600 mt-1">Administrative oversight and account management.</p>
+                                <h2 class="text-lg font-semibold text-red-400 flex items-center"><i class="fa-solid fa-shield mr-2"></i> User Management Console</h2>
+                                <p class="text-sm text-red-300/70 mt-1">Administrative oversight and account management.</p>
                             </div>
                             <div class="space-x-2">
                                 <button onclick="exportLogs()" class="text-sm text-slate-300 bg-slate-900 border border-slate-600 hover:bg-slate-800 font-medium px-3 py-1.5 rounded-md transition-colors shadow-sm"><i class="fa-solid fa-download mr-1.5"></i> Export Report</button>
-                                <button onclick="fetchUsers()" class="text-sm text-red-700 bg-slate-900 border border-red-200 hover:bg-red-50 font-medium px-3 py-1.5 rounded-md transition-colors shadow-sm"><i class="fa-solid fa-rotate-right mr-1.5"></i> Refresh</button>
+                                <button onclick="fetchUsers()" class="text-sm text-red-400 bg-slate-900 border border-red-800 hover:bg-red-900/50 font-medium px-3 py-1.5 rounded-md transition-colors shadow-sm"><i class="fa-solid fa-rotate-right mr-1.5"></i> Refresh</button>
                             </div>
                         </div>
                         <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
+                            <table class="min-w-full divide-y divide-slate-700">
                                 <thead class="bg-slate-800">
                                     <tr>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Username</th>
@@ -375,7 +375,7 @@
                                         <th class="px-6 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody id="users-body" class="bg-slate-900 divide-y divide-gray-200">
+                                <tbody id="users-body" class="bg-slate-900 divide-y divide-slate-700">
                                     <!-- Injected by JS -->
                                 </tbody>
                             </table>
