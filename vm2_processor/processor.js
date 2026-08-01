@@ -9,6 +9,7 @@ const path = require('path');
 const jwt = require('jsonwebtoken');
 const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer');
 
 const app = express();
 app.use(cors());
@@ -32,6 +33,7 @@ db.serialize(() => {
     db.run(`CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE,
+        email TEXT UNIQUE,
         password_hash TEXT,
         role TEXT DEFAULT 'employee',
         failed_attempts INTEGER DEFAULT 0,
@@ -52,64 +54,176 @@ function logSecurityEvent(type, user, details) {
     db.run(`INSERT INTO security_events (event_type, username, details) VALUES (?, ?, ?)`, [type, user, details]);
 }
 
+// --- Email Configuration (Ethereal) ---
+let transporter;
+nodemailer.createTestAccount((err, account) => {
+    if (err) {
+        console.error('Failed to create a testing account. ' + err.message);
+        return;
+    }
+    transporter = nodemailer.createTransport({
+        host: account.smtp.host,
+        port: account.smtp.port,
+        secure: account.smtp.secure,
+        auth: {
+            user: account.user,
+            pass: account.pass
+        }
+    });
+    console.log('Ethereal Email Server Ready. Emails will be logged to console.');
+});
+
+// In-memory OTP store: { email: { otp, expires } }
+const otpStore = {};
+
 // --- Authentication (JWT & bcrypt) ---
 
-app.post('/api/register', (req, res) => {
-    const { username, password } = req.body;
-    if (!username || !password) return res.status(400).json({ error: 'Missing fields' });
 
-    const role = username.toLowerCase() === 'admin' ? 'admin' : 'employee';
+// --- Utilities ---
+function generateOTP() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+async function sendOTPEmail(email, otp, context) {
+    if (!transporter) return;
+    const mailOptions = {
+        from: '"CorpVault Security" <no-reply@corpvault.com>',
+        to: email,
+        subject: `Your OTP for ${context}`,
+        text: `Your secure code is: ${otp}. Do not share this with anyone.`
+    };
+    try {
+        let info = await transporter.sendMail(mailOptions);
+        const url = nodemailer.getTestMessageUrl(info);
+        console.log(`[OTP] Sent to ${email}: ${otp}`);
+        console.log('Preview URL: %s', url);
+        return url;
+    } catch(e) {
+        console.error('Email failed:', e);
+    }
+}
+
+// --- Authentication (Real Email 2FA) ---
+
+app.post('/api/send-otp', (req, res) => {
+    const { email, context } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email required' });
+    
+    if (context === 'register') {
+        db.get(`SELECT * FROM users WHERE email = ?`, [email], (err, user) => {
+            if (user) return res.status(400).json({ error: 'Email already registered' });
+            const otp = generateOTP();
+            otpStore[email] = { otp, expires: Date.now() + 5 * 60000 };
+            sendOTPEmail(email, otp, 'Registration').then(url => {
+                res.json({ success: true, message: 'OTP sent', previewUrl: url });
+            });
+        });
+    } else if (context === 'reset') {
+        db.get(`SELECT * FROM users WHERE email = ?`, [email], (err, user) => {
+            if (!user) return res.status(404).json({ error: 'Email not found' });
+            const otp = generateOTP();
+            otpStore[email] = { otp, expires: Date.now() + 5 * 60000 };
+            sendOTPEmail(email, otp, 'Password Reset').then(url => {
+                res.json({ success: true, message: 'OTP sent', previewUrl: url });
+            });
+        });
+    } else {
+        res.status(400).json({ error: 'Invalid context' });
+    }
+});
+
+app.post('/api/register', (req, res) => {
+    const { username, password, email, otp } = req.body;
+    if (!username || !password || !email || !otp) return res.status(400).json({ error: 'Missing fields' });
+    
+    if (username.toLowerCase() === 'admin') {
+        return res.status(403).json({ error: 'Admin cannot be registered via UI' });
+    }
+
+    const storedOtp = otpStore[email];
+    if (!storedOtp || storedOtp.otp !== otp || storedOtp.expires < Date.now()) {
+        return res.status(401).json({ error: 'Invalid or expired OTP' });
+    }
 
     bcrypt.hash(password, 10, (err, hash) => {
         if (err) return res.status(500).json({ error: 'Hashing failed' });
         
-        db.run(`INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)`, [username, hash, role], function(dbErr) {
-            if (dbErr) return res.status(400).json({ error: 'Username already exists' });
-            logSecurityEvent('USER_REGISTERED', username, `Role assigned: ${role}`);
-            res.json({ success: true, message: 'Registration successful' });
+        db.run(`INSERT INTO users (username, email, password_hash, role) VALUES (?, ?, ?, ?)`, [username, email, hash, 'employee'], function(dbErr) {
+            if (dbErr) return res.status(400).json({ error: 'Username or email already exists' });
+            delete otpStore[email];
+            logSecurityEvent('USER_REGISTERED', username, `Email verified and registered`);
+            
+            const token = jwt.sign({ user: username, role: 'employee' }, JWT_SECRET, { expiresIn: '2h' });
+            res.json({ success: true, token, username, role: 'employee' });
         });
     });
 });
 
-app.post('/api/login', (req, res) => {
+app.post('/api/login-step1', (req, res) => {
     const { username, password } = req.body;
-    
     db.get(`SELECT * FROM users WHERE username = ?`, [username], (err, user) => {
-        if (err || !user) {
-            logSecurityEvent('LOGIN_FAILED', username || 'unknown', 'Invalid username');
-            return res.status(401).json({ error: 'Invalid credentials' });
-        }
+        if (err || !user) return res.status(401).json({ error: 'Invalid credentials' });
         
-        // Check Lockout
         if (user.locked_until > Date.now()) {
-            const minLeft = Math.ceil((user.locked_until - Date.now()) / 60000);
-            return res.status(403).json({ error: `Account locked. Try again in ${minLeft} mins.` });
+            return res.status(403).json({ error: 'Account locked.' });
         }
         
         bcrypt.compare(password, user.password_hash, (bcryptErr, match) => {
             if (match) {
-                // Reset failed attempts
-                db.run(`UPDATE users SET failed_attempts = 0, locked_until = 0 WHERE id = ?`, [user.id]);
-                const token = jwt.sign({ user: user.username, role: user.role }, JWT_SECRET, { expiresIn: '2h' });
-                logSecurityEvent('LOGIN_SUCCESS', username, `Logged in successfully`);
-                res.json({ success: true, token, username: user.username, role: user.role });
-            } else {
-                // Handle failed attempt logic
-                const newFails = user.failed_attempts + 1;
-                let lockedUntil = 0;
-                let msg = 'Invalid credentials';
-                
-                if (newFails >= 3) {
-                    lockedUntil = Date.now() + 5 * 60000; // 5 mins
-                    msg = 'Account locked due to too many failed attempts.';
-                    logSecurityEvent('ACCOUNT_LOCKED', username, 'Exceeded max password attempts');
-                } else {
-                    logSecurityEvent('LOGIN_FAILED', username, `Failed attempt ${newFails}/3`);
+                if (user.role === 'admin') {
+                    db.run(`UPDATE users SET failed_attempts = 0, locked_until = 0 WHERE id = ?`, [user.id]);
+                    const token = jwt.sign({ user: user.username, role: user.role }, JWT_SECRET, { expiresIn: '2h' });
+                    logSecurityEvent('LOGIN_SUCCESS', username, `Admin logged in (2FA Bypassed)`);
+                    return res.json({ success: true, token, username: user.username, role: user.role });
                 }
                 
-                db.run(`UPDATE users SET failed_attempts = ?, locked_until = ? WHERE id = ?`, [newFails, lockedUntil, user.id]);
-                res.status(401).json({ error: msg });
+                const otp = generateOTP();
+                otpStore[user.email] = { otp, expires: Date.now() + 5 * 60000 };
+                sendOTPEmail(user.email, otp, 'Secure Login').then(url => {
+                    res.json({ requireOtp: true, email: user.email, message: 'OTP sent to registered email', previewUrl: url });
+                });
+            } else {
+                db.run(`UPDATE users SET failed_attempts = failed_attempts + 1 WHERE id = ?`, [user.id]);
+                res.status(401).json({ error: 'Invalid credentials' });
             }
+        });
+    });
+});
+
+app.post('/api/login-step2', (req, res) => {
+    const { username, otp } = req.body;
+    db.get(`SELECT * FROM users WHERE username = ?`, [username], (err, user) => {
+        if (err || !user) return res.status(401).json({ error: 'Invalid user' });
+        
+        const storedOtp = otpStore[user.email];
+        if (!storedOtp || storedOtp.otp !== otp || storedOtp.expires < Date.now()) {
+            logSecurityEvent('LOGIN_FAILED', username, 'Invalid OTP attempt');
+            return res.status(401).json({ error: 'Invalid or expired OTP' });
+        }
+        
+        delete otpStore[user.email];
+        db.run(`UPDATE users SET failed_attempts = 0, locked_until = 0 WHERE id = ?`, [user.id]);
+        const token = jwt.sign({ user: user.username, role: user.role }, JWT_SECRET, { expiresIn: '2h' });
+        logSecurityEvent('LOGIN_SUCCESS', username, `Logged in with 2FA`);
+        res.json({ success: true, token, username: user.username, role: user.role });
+    });
+});
+
+app.post('/api/reset-password', (req, res) => {
+    const { email, otp, newPassword } = req.body;
+    if (!email || !otp || !newPassword) return res.status(400).json({ error: 'Missing fields' });
+    
+    const storedOtp = otpStore[email];
+    if (!storedOtp || storedOtp.otp !== otp || storedOtp.expires < Date.now()) {
+        return res.status(401).json({ error: 'Invalid or expired OTP' });
+    }
+    
+    bcrypt.hash(newPassword, 10, (err, hash) => {
+        if (err) return res.status(500).json({ error: 'Hashing failed' });
+        db.run(`UPDATE users SET password_hash = ? WHERE email = ?`, [hash, email], function(dbErr) {
+            delete otpStore[email];
+            logSecurityEvent('PASSWORD_RESET', email, `Password reset via OTP`);
+            res.json({ success: true, message: 'Password reset successfully' });
         });
     });
 });

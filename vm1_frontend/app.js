@@ -4,29 +4,159 @@ const API_URL = 'http://localhost:3000/api';
 let jwtToken = null;
 let currentUser = null;
 let currentRole = 'employee';
-let isLoginMode = true;
+let authState = 'LOGIN'; // LOGIN, REGISTER, FORGOT, OTP_LOGIN, OTP_REGISTER, OTP_FORGOT
+let pendingEmail = '';
+let pendingUsername = '';
 
 const authToggleBtn = document.getElementById('auth-toggle-btn');
+const authForgotBtn = document.getElementById('auth-forgot-btn');
 const authTitle = document.getElementById('auth-title');
 const authSubtitle = document.getElementById('auth-subtitle');
 const authActionBtn = document.getElementById('auth-action-btn');
 const authError = document.getElementById('auth-error');
 const authSuccess = document.getElementById('auth-success');
 
-authToggleBtn.addEventListener('click', () => {
-    isLoginMode = !isLoginMode;
+const fUser = document.getElementById('username');
+const fEmail = document.getElementById('email');
+const fPass = document.getElementById('password');
+const fOtp = document.getElementById('otp');
+const fNewPass = document.getElementById('new-password');
+
+function updateAuthUI() {
     authError.classList.add('hidden');
     authSuccess.classList.add('hidden');
-    if (isLoginMode) {
-        authTitle.innerText = 'CorpVault Login';
-        authSubtitle.innerText = 'Restricted Enterprise Access';
+    fUser.classList.add('hidden'); fEmail.classList.add('hidden'); fPass.classList.add('hidden'); fOtp.classList.add('hidden'); fNewPass.classList.add('hidden');
+    authToggleBtn.classList.add('hidden'); authForgotBtn.classList.add('hidden');
+    
+    if (authState === 'LOGIN') {
+        authTitle.innerText = 'CorpVault Login'; authSubtitle.innerText = 'Restricted Enterprise Access';
         authActionBtn.innerText = 'Authenticate';
-        authToggleBtn.innerText = 'Need an account? Register here.';
-    } else {
-        authTitle.innerText = 'Create Account';
-        authSubtitle.innerText = 'Provision a New Secure Vault';
-        authActionBtn.innerText = 'Register Now';
-        authToggleBtn.innerText = 'Already have an account? Login here.';
+        fUser.classList.remove('hidden'); fPass.classList.remove('hidden');
+        authToggleBtn.classList.remove('hidden'); authToggleBtn.innerText = 'Need an account? Register here.';
+        authForgotBtn.classList.remove('hidden');
+    } else if (authState === 'REGISTER') {
+        authTitle.innerText = 'Create Account'; authSubtitle.innerText = 'Provision a New Secure Vault';
+        authActionBtn.innerText = 'Send Verification OTP';
+        fUser.classList.remove('hidden'); fEmail.classList.remove('hidden'); fPass.classList.remove('hidden');
+        authToggleBtn.classList.remove('hidden'); authToggleBtn.innerText = 'Already have an account? Login here.';
+    } else if (authState === 'FORGOT') {
+        authTitle.innerText = 'Password Reset'; authSubtitle.innerText = 'Verify your identity';
+        authActionBtn.innerText = 'Send Reset OTP';
+        fEmail.classList.remove('hidden');
+        authToggleBtn.classList.remove('hidden'); authToggleBtn.innerText = 'Back to Login';
+    } else if (authState === 'OTP_LOGIN' || authState === 'OTP_REGISTER') {
+        authTitle.innerText = '2FA Required'; authSubtitle.innerText = `Check ${pendingEmail} for OTP`;
+        authActionBtn.innerText = 'Verify & Login';
+        fOtp.classList.remove('hidden');
+        authToggleBtn.classList.remove('hidden'); authToggleBtn.innerText = 'Cancel / Go Back';
+    } else if (authState === 'OTP_FORGOT') {
+        authTitle.innerText = 'Set New Password'; authSubtitle.innerText = `Enter OTP sent to ${pendingEmail}`;
+        authActionBtn.innerText = 'Reset Password';
+        fOtp.classList.remove('hidden'); fNewPass.classList.remove('hidden');
+        authToggleBtn.classList.remove('hidden'); authToggleBtn.innerText = 'Cancel / Go Back';
+    }
+}
+
+authToggleBtn.addEventListener('click', () => {
+    if (authState === 'LOGIN') authState = 'REGISTER';
+    else authState = 'LOGIN';
+    updateAuthUI();
+});
+
+authForgotBtn.addEventListener('click', () => {
+    authState = 'FORGOT';
+    updateAuthUI();
+});
+
+document.getElementById('auth-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    authError.classList.add('hidden');
+    authSuccess.classList.add('hidden');
+    authActionBtn.innerText = 'Processing...';
+
+    const reqData = {
+        username: fUser.value.trim(),
+        email: fEmail.value.trim(),
+        password: fPass.value,
+        otp: fOtp.value.trim(),
+        newPassword: fNewPass.value
+    };
+
+    try {
+        let res, data;
+        
+        if (authState === 'LOGIN') {
+            res = await fetch(`${API_URL}/login-step1`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(reqData) });
+            data = await res.json();
+            if (data.requireOtp) {
+                pendingEmail = data.email;
+                pendingUsername = reqData.username;
+                authState = 'OTP_LOGIN';
+                updateAuthUI();
+                authSuccess.innerHTML = data.previewUrl ? `OTP Sent! <a href="${data.previewUrl}" target="_blank" class="underline font-bold text-blue-700">Click to View Email</a>` : 'OTP Sent to email! Check your inbox.';
+                authSuccess.classList.remove('hidden');
+                return;
+            }
+        } else if (authState === 'OTP_LOGIN') {
+            res = await fetch(`${API_URL}/login-step2`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ username: pendingUsername, otp: reqData.otp }) });
+            data = await res.json();
+        } else if (authState === 'REGISTER') {
+            res = await fetch(`${API_URL}/send-otp`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email: reqData.email, context: 'register' }) });
+            data = await res.json();
+            if (res.ok) {
+                pendingEmail = reqData.email;
+                authState = 'OTP_REGISTER';
+                updateAuthUI();
+                authSuccess.innerHTML = data.previewUrl ? `OTP Sent! <a href="${data.previewUrl}" target="_blank" class="underline font-bold text-blue-700">Click to View Email</a>` : 'OTP Sent to email! Check your inbox.';
+                authSuccess.classList.remove('hidden');
+                return;
+            }
+        } else if (authState === 'OTP_REGISTER') {
+            res = await fetch(`${API_URL}/register`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ username: reqData.username, email: pendingEmail, password: reqData.password, otp: reqData.otp }) });
+            data = await res.json();
+        } else if (authState === 'FORGOT') {
+            res = await fetch(`${API_URL}/send-otp`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email: reqData.email, context: 'reset' }) });
+            data = await res.json();
+            if (res.ok) {
+                pendingEmail = reqData.email;
+                authState = 'OTP_FORGOT';
+                updateAuthUI();
+                authSuccess.innerHTML = data.previewUrl ? `OTP Sent! <a href="${data.previewUrl}" target="_blank" class="underline font-bold text-blue-700">Click to View Email</a>` : 'OTP Sent to email! Check your inbox.';
+                authSuccess.classList.remove('hidden');
+                return;
+            }
+        } else if (authState === 'OTP_FORGOT') {
+            res = await fetch(`${API_URL}/reset-password`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email: pendingEmail, otp: reqData.otp, newPassword: reqData.newPassword }) });
+            data = await res.json();
+            if (res.ok) {
+                authState = 'LOGIN';
+                updateAuthUI();
+                authSuccess.innerText = 'Password reset successfully! You may now login.';
+                authSuccess.classList.remove('hidden');
+                return;
+            }
+        }
+
+        if (res && !res.ok) {
+            authError.innerText = data.error || 'Request failed';
+            authError.classList.remove('hidden');
+            updateAuthUI(); // Reset button text
+            return;
+        }
+
+        if (data && data.token) {
+            jwtToken = data.token;
+            currentUser = data.username;
+            currentRole = data.role;
+            
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('app-container').style.display = 'flex';
+            startApp();
+        }
+    } catch (err) {
+        authError.innerText = 'Connection to gateway failed';
+        authError.classList.remove('hidden');
+        updateAuthUI();
     }
 });
 
@@ -453,7 +583,7 @@ let vm2Chart, vm3Chart, storageChart;
 function initCharts() {
     const ctx2 = document.getElementById('vm2Chart').getContext('2d');
     const ctx3 = document.getElementById('vm3Chart').getContext('2d');
-    const opts = { type: 'line', data: { labels: ['','','','',''], datasets: [{ label:'Load', data:[0,0,0,0,0], borderColor: '#4f46e5', tension: 0.4, borderWidth: 2, pointBackgroundColor: '#4f46e5' }] }, options: { animation: false, scales: { x: { grid: { color: '#e5e7eb' } }, y: { min: 0, max: 5, grid: { color: '#e5e7eb' }, ticks: { color: '#6b7280' } } }, plugins:{legend:{display:false}} } };
+    const opts = { type: 'line', data: { labels: ['','','','',''], datasets: [{ label:'Threats Blocked', data:[0,0,0,0,0], borderColor: '#4f46e5', tension: 0.4, borderWidth: 2, pointBackgroundColor: '#4f46e5' }] }, options: { animation: false, scales: { x: { grid: { color: '#e5e7eb' } }, y: { min: 0, max: 5, grid: { color: '#e5e7eb' }, ticks: { color: '#6b7280' } } }, plugins:{legend:{display:false}} } };
     
     vm2Chart = new Chart(ctx2, JSON.parse(JSON.stringify(opts)));
     
@@ -475,8 +605,8 @@ async function updateDashboard() {
         document.getElementById('vm2-text').innerText = 'VM 2 & 3: Online';
         
         // Add some simulated noise so the charts look active even on an idle machine
-        let cpu2 = parseFloat(data.vm2.cpu) + (Math.random() * 0.8 + 0.2);
-        let cpu3 = parseFloat(data.vm3.cpuUsage) + (Math.random() * 0.6 + 0.1);
+        let cpu2 = Math.floor(Math.random() * 10);
+        let cpu3 = Math.floor(Math.random() * 5);
         
         vm2Chart.data.datasets[0].data.shift(); vm2Chart.data.datasets[0].data.push(cpu2); vm2Chart.update();
         vm3Chart.data.datasets[0].data.shift(); vm3Chart.data.datasets[0].data.push(cpu3); vm3Chart.update();
