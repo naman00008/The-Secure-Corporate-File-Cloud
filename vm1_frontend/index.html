@@ -313,11 +313,14 @@
                     <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
                         <div class="px-6 py-5 border-b border-gray-200 flex justify-between items-center bg-white">
                             <div>
-                                <h2 class="text-lg font-semibold text-gray-900">File Explorer</h2>
+                                <h2 class="text-lg font-semibold text-gray-900 flex items-center"><i class="fa-solid fa-database mr-2 text-indigo-500"></i> SQLite DB Records</h2>
                                 <p class="text-sm text-gray-500 mt-1">Files currently persisted in the backend database.</p>
                                 <p id="admin-log-notice" class="hidden text-xs font-medium text-red-600 mt-2 bg-red-50 inline-block px-2 py-1 rounded border border-red-100"><i class="fa-solid fa-circle-exclamation mr-1"></i> Admin Console: Viewing all company records.</p>
                             </div>
-                            <button onclick="fetchLogs()" class="text-sm text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 font-medium px-4 py-2 rounded-md transition-colors shadow-sm"><i class="fa-solid fa-rotate-right mr-1.5"></i> Refresh Data</button>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="document.getElementById('preview-modal').classList.remove('hidden')" class="text-sm text-indigo-700 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 font-medium px-4 py-2 rounded-md transition-colors shadow-sm"><i class="fa-solid fa-expand mr-1.5"></i> Show Active Previews</button>
+                                <button onclick="fetchLogs()" class="text-sm text-gray-700 bg-white border border-gray-300 hover:bg-gray-100 font-medium px-4 py-2 rounded-md transition-colors shadow-sm"><i class="fa-solid fa-rotate-right mr-1.5"></i> Refresh Data</button>
+                            </div>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
@@ -430,9 +433,14 @@
         <div class="bg-white w-full max-w-6xl h-[85vh] flex flex-col rounded-xl shadow-2xl overflow-hidden transform transition-all">
             <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
                 <h3 class="font-medium text-gray-900" id="preview-title">Document Viewer <span class="text-xs text-gray-500 ml-2 font-normal">(Viewing multiple files side-by-side)</span></h3>
-                <button onclick="document.getElementById('preview-content').innerHTML=''; document.getElementById('preview-modal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-md hover:bg-gray-200">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                <div class="flex items-center space-x-2">
+                    <button onclick="document.getElementById('preview-modal').classList.add('hidden')" class="text-sm text-gray-600 bg-white border border-gray-300 hover:bg-gray-100 font-medium px-3 py-1.5 rounded-md transition-colors shadow-sm">
+                        <i class="fa-solid fa-compress mr-1.5"></i> Hide Viewer
+                    </button>
+                    <button onclick="document.getElementById('preview-content').innerHTML=''; document.getElementById('preview-modal').classList.add('hidden')" class="text-sm text-red-600 bg-white border border-red-200 hover:bg-red-50 font-medium px-3 py-1.5 rounded-md transition-colors shadow-sm">
+                        <i class="fa-solid fa-trash-can mr-1.5"></i> Clear All
+                    </button>
+                </div>
             </div>
             <div class="flex-1 p-6 bg-gray-100 flex flex-row space-x-6 overflow-x-auto items-center justify-start" id="preview-content">
                 <!-- Content Injected Here -->
