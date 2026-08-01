@@ -161,6 +161,9 @@ function logEvent(msg, colorClass = 'text-green-400') {
 }
 
 // --- Upload Logic (With Malware Scanner) ---
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+const uploadBtn = document.getElementById('upload-btn');
 let selectedFiles = [];
 
 dropZone.addEventListener('click', () => fileInput.click());
