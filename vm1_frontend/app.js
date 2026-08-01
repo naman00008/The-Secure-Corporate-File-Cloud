@@ -437,14 +437,14 @@ let vm2Chart, vm3Chart, storageChart;
 function initCharts() {
     const ctx2 = document.getElementById('vm2Chart').getContext('2d');
     const ctx3 = document.getElementById('vm3Chart').getContext('2d');
-    const opts = { type: 'line', data: { labels: ['','','','',''], datasets: [{ label:'Load', data:[0,0,0,0,0], borderColor: '#3b82f6', tension: 0.4, borderWidth: 3 }] }, options: { animation: false, scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { min: 0, max: 5, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } } }, plugins:{legend:{display:false}} } };
+    const opts = { type: 'line', data: { labels: ['','','','',''], datasets: [{ label:'Load', data:[0,0,0,0,0], borderColor: '#4f46e5', tension: 0.4, borderWidth: 2, pointBackgroundColor: '#4f46e5' }] }, options: { animation: false, scales: { x: { grid: { color: '#f3f4f6' } }, y: { min: 0, max: 5, grid: { color: '#f3f4f6' }, ticks: { color: '#6b7280' } } }, plugins:{legend:{display:false}} } };
     
     vm2Chart = new Chart(ctx2, JSON.parse(JSON.stringify(opts)));
     opts.data.datasets[0].borderColor = '#10b981';
     vm3Chart = new Chart(ctx3, opts);
 
     const ctxStore = document.getElementById('storageChart').getContext('2d');
-    storageChart = new Chart(ctxStore, { type: 'doughnut', data: { labels: ['Used', 'Free'], datasets: [{ data: [1, 99], backgroundColor: ['#3b82f6', '#0f172a'], borderWidth: 0 }] }, options: { cutout: '80%', plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
+    storageChart = new Chart(ctxStore, { type: 'doughnut', data: { labels: ['Used', 'Free'], datasets: [{ data: [1, 99], backgroundColor: ['#4f46e5', '#f3f4f6'], borderWidth: 0 }] }, options: { cutout: '80%', plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
 }
 
 async function updateDashboard() {
