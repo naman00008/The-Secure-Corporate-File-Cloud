@@ -85,8 +85,8 @@
                         <div class="border-t border-gray-200 my-1"></div>
                     </div>
                     
-                    <button onclick="nav('admin'); fetchUsers();" id="nav-item-admin" class="hidden nav-btn w-full flex items-center px-3 py-2 text-sm font-medium rounded-md text-red-600 hover:bg-red-50 transition-colors">
-                        <i class="fa-solid fa-shield w-5 text-red-500 mr-2"></i> Admin Console
+                    <button onclick="nav('admin'); fetchUsers();" id="nav-item-admin" class="hidden nav-btn w-full flex items-center px-3 py-2 text-sm font-medium rounded-md text-blue-600 hover:bg-blue-50 transition-colors">
+                        <i class="fa-solid fa-shield w-5 text-blue-500 mr-2"></i> Admin Console
                     </button>
                 </nav>
             </div>
@@ -110,7 +110,7 @@
                 <h2 id="page-title" class="text-lg font-semibold text-gray-900">Overview</h2>
                 <div class="flex items-center space-x-4">
                     <button onclick="triggerBackup()" id="btn-backup" class="text-gray-500 hover:text-gray-900 text-sm font-medium transition-colors px-2 py-1 rounded-md hover:bg-gray-100 flex items-center"><i class="fa-solid fa-download mr-1.5"></i> Export Backup</button>
-                    <button onclick="toggleLockdown()" id="btn-lockdown" class="text-red-600 hover:text-red-800 text-sm font-medium transition-colors px-2 py-1 rounded-md hover:bg-red-50 border border-transparent flex items-center"><i class="fa-solid fa-lock mr-1.5"></i> Lockdown</button>
+                    <button onclick="toggleLockdown()" id="btn-lockdown" class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors px-2 py-1 rounded-md hover:bg-blue-50 border border-transparent flex items-center"><i class="fa-solid fa-lock mr-1.5"></i> Lockdown</button>
                     
                     <div class="h-5 w-px bg-gray-200 mx-1"></div>
                     
@@ -315,7 +315,7 @@
                             <div>
                                 <h2 class="text-lg font-semibold text-gray-900 flex items-center"><i class="fa-solid fa-database mr-2 text-indigo-500"></i> SQLite DB Records</h2>
                                 <p class="text-sm text-gray-500 mt-1">Files currently persisted in the backend database.</p>
-                                <p id="admin-log-notice" class="hidden text-xs font-medium text-red-600 mt-2 bg-red-50 inline-block px-2 py-1 rounded border border-red-100"><i class="fa-solid fa-circle-exclamation mr-1"></i> Admin Console: Viewing all company records.</p>
+                                <p id="admin-log-notice" class="hidden text-xs font-medium text-blue-600 mt-2 bg-blue-50 inline-block px-2 py-1 rounded border border-blue-100"><i class="fa-solid fa-circle-exclamation mr-1"></i> Admin Console: Viewing all company records.</p>
                             </div>
                             <div class="flex items-center space-x-2">
                                 <button onclick="document.getElementById('preview-modal').classList.remove('hidden')" class="text-sm text-indigo-700 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 font-medium px-4 py-2 rounded-md transition-colors shadow-sm"><i class="fa-solid fa-expand mr-1.5"></i> Show Active Previews</button>

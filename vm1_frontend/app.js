@@ -272,10 +272,10 @@ async function fetchLogs() {
         files.forEach(f => {
             const expires = f.expires_at ? new Date(f.expires_at).toLocaleTimeString() : 'Never';
             
-            let actionBtns = `<button onclick="downloadFile('${f.uploader}', '${f.encrypted_name}')" class="text-blue-400 hover:text-blue-300 text-sm font-bold bg-blue-900/30 px-3 py-1 rounded mb-1 mr-1 border border-blue-800 transition">Download</button>`;
+            let actionBtns = `<button onclick="downloadFile('${f.uploader}', '${f.encrypted_name}')" class="text-blue-600 hover:text-blue-800 text-sm font-medium bg-white px-3 py-1 rounded mb-1 mr-1 border border-blue-200 hover:bg-blue-50 shadow-sm transition">Download</button>`;
             
             if (currentRole === 'admin') {
-                actionBtns += `<button onclick="viewFile('${f.uploader}', '${f.encrypted_name}')" class="text-purple-400 hover:text-purple-300 text-sm font-bold bg-purple-900/30 px-3 py-1 rounded mb-1 border border-purple-800 transition">Preview</button>`;
+                actionBtns += `<button onclick="viewFile('${f.uploader}', '${f.encrypted_name}')" class="text-purple-600 hover:text-purple-800 text-sm font-medium bg-white px-3 py-1 rounded mb-1 border border-purple-200 hover:bg-purple-50 shadow-sm transition">Preview</button>`;
             }
 
             tbody.innerHTML += `
@@ -374,13 +374,13 @@ async function toggleLockdown() {
         const res = await fetch(`${API_URL}/lockdown`, { method: 'POST', headers: getHeaders() });
         const data = await res.json();
         if (data.locked) {
-            document.getElementById('btn-lockdown').classList.replace('bg-red-50', 'bg-red-600');
-            document.getElementById('btn-lockdown').classList.replace('text-red-600', 'text-white');
+            document.getElementById('btn-lockdown').classList.replace('bg-blue-50', 'bg-blue-600');
+            document.getElementById('btn-lockdown').classList.replace('text-blue-600', 'text-white');
             document.getElementById('btn-lockdown').innerHTML = '<i class="fa-solid fa-lock"></i> SYSTEM SECURED';
             mockAction('GLOBAL LOCKDOWN ENGAGED');
         } else {
-            document.getElementById('btn-lockdown').classList.replace('bg-red-600', 'bg-red-50');
-            document.getElementById('btn-lockdown').classList.replace('text-white', 'text-red-600');
+            document.getElementById('btn-lockdown').classList.replace('bg-blue-600', 'bg-blue-50');
+            document.getElementById('btn-lockdown').classList.replace('text-white', 'text-blue-600');
             document.getElementById('btn-lockdown').innerHTML = '<i class="fa-solid fa-unlock"></i> Lockdown';
             mockAction('Lockdown Disengaged');
         }
