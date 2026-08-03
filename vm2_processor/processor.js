@@ -277,6 +277,23 @@ app.get('/api/preview/:uploader/:filename', verifyToken, async (req, res) => {
     await decryptFromVault(req.params.uploader, req.params.filename, res, true);
 });
 
+// Delete File (Owner or Admin)
+app.delete('/api/files/:uploader/:filename', verifyToken, async (req, res) => {
+    const { uploader, filename } = req.params;
+    if (req.user.role !== 'admin' && req.user.user !== uploader) {
+        return res.status(403).json({ error: 'Unauthorized to delete this file' });
+    }
+    
+    try {
+        await axios.delete(`${VM3_URL}/file/${uploader}/${filename}`);
+        const origName = filename.split('_').slice(2).join('_');
+        logSecurityEvent('FILE_DELETED', req.user.user, `Permanently purged file: ${origName} (Owner: ${uploader})`);
+        res.json({ success: true, message: 'File deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to delete file from vault' });
+    }
+});
+
 // 3. Get Logs (RBAC Isolated)
 app.get('/api/logs', verifyToken, async (req, res) => {
     try {

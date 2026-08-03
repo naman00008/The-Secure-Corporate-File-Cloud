@@ -324,19 +324,24 @@ async function fetchLogs() {
         files.forEach(f => {
             const expires = f.expires_at ? new Date(f.expires_at).toLocaleTimeString() : 'Never';
             
-            let actionBtns = `<button onclick="downloadFile('${f.uploader}', '${f.encrypted_name}')" class="text-blue-600 hover:text-blue-800 text-sm font-medium bg-white px-3 py-1 rounded mb-1 mr-1 border border-blue-200 hover:bg-blue-50 shadow-sm transition">Download</button>`;
+            // 1. Download Button (Blue)
+            let actionBtns = `<button onclick="downloadFile('${f.uploader}', '${f.encrypted_name}')" class="text-blue-600 hover:text-blue-800 text-xs font-semibold bg-white hover:bg-blue-50 px-2.5 py-1 rounded border border-blue-200 shadow-sm transition mr-1 mb-1"><i class="fa-solid fa-download mr-1"></i> Download</button>`;
             
-            if (currentRole === 'admin') {
-                actionBtns += `<button onclick="viewFile('${f.uploader}', '${f.encrypted_name}')" class="text-purple-600 hover:text-purple-800 text-sm font-medium bg-white px-3 py-1 rounded mb-1 border border-purple-200 hover:bg-purple-50 shadow-sm transition">Preview</button>`;
+            // 2. Preview / Review Button (Purple - Available for all users on their files, and Admin on all)
+            actionBtns += `<button onclick="viewFile('${f.uploader}', '${f.encrypted_name}')" class="text-purple-600 hover:text-purple-800 text-xs font-semibold bg-white hover:bg-purple-50 px-2.5 py-1 rounded border border-purple-200 shadow-sm transition mr-1 mb-1"><i class="fa-solid fa-eye mr-1"></i> Preview</button>`;
+            
+            // 3. Delete File Button (Red - Owner or Super Admin)
+            if (currentRole === 'admin' || currentUser === f.uploader) {
+                actionBtns += `<button onclick="deleteFile('${f.uploader}', '${f.encrypted_name}')" class="text-red-600 hover:text-red-800 text-xs font-semibold bg-white hover:bg-red-50 px-2.5 py-1 rounded border border-red-200 shadow-sm transition mb-1"><i class="fa-solid fa-trash-can mr-1"></i> Delete</button>`;
             }
 
             tbody.innerHTML += `
                 <tr class="hover:bg-gray-50 transition border-b border-gray-200">
                     <td class="p-4 text-gray-500 font-bold">#${f.id}</td>
-                    <td class="p-4 text-gray-700 text-sm">${f.original_name}</td>
+                    <td class="p-4 text-gray-700 text-sm font-medium">${f.original_name}</td>
                     <td class="p-4 text-gray-500 font-mono text-xs"><i class="fa-solid fa-lock text-gray-700 mr-2"></i> ${f.encrypted_name}</td>
                     <td class="p-4 text-gray-400 text-sm"><i class="fa-solid fa-user-shield text-blue-400 mr-1"></i> ${f.uploader} <br><span class="text-xs text-red-800">Expires: ${expires}</span></td>
-                    <td class="p-4 text-right">
+                    <td class="p-4 text-right whitespace-nowrap">
                         ${actionBtns}
                     </td>
                 </tr>
@@ -496,6 +501,32 @@ function downloadFile(uploader, filename) {
 
 function viewFile(uploader, filename) {
     handleFileFetch(uploader, filename, true);
+}
+
+async function deleteFile(uploader, filename) {
+    const origName = filename.split('_').slice(2).join('_') || filename;
+    if (!confirm(`CONFIRM FILE PURGE: Are you sure you want to permanently delete '${origName}' from the Encrypted Vault?`)) return;
+    
+    try {
+        const res = await fetch(`${API_URL}/files/${uploader}/${filename}`, {
+            method: 'DELETE',
+            headers: getHeaders()
+        });
+        
+        if (res.ok) {
+            mockAction(`Permanently deleted: ${origName}`);
+            logEvent(`DELETE: Purged ${origName} from VM3 Vault`, 'text-red-600 font-bold');
+            fetchLogs();
+            updateDashboard();
+            fetchSecurityLogs();
+        } else {
+            const data = await res.json();
+            throw new Error(data.error || 'Delete failed');
+        }
+    } catch (err) {
+        mockAction(`Delete Failed: ${err.message}`);
+        logEvent(`ERROR: ${err.message}`, 'text-red-600');
+    }
 }
 
 // --- Dashboard Health Logic ---

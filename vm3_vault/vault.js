@@ -113,6 +113,26 @@ app.get('/health', (req, res) => {
     });
 });
 
+// 6. Delete File & Metadata
+app.delete('/file/:uploader/:filename', (req, res) => {
+    const { uploader, filename } = req.params;
+    const filePath = path.join(STORAGE_DIR, uploader, filename);
+    
+    if (fs.existsSync(filePath)) {
+        try {
+            fs.unlinkSync(filePath);
+        } catch (e) {
+            console.error("File unlink error:", e);
+        }
+    }
+    
+    db.run(`DELETE FROM file_logs WHERE encrypted_name = ? AND uploader = ?`, [filename, uploader], function(err) {
+        if (err) return res.status(500).json({ error: 'Database delete failed' });
+        console.log(`[VM 3 Vault] 🗑️ DELETED: ${uploader}/${filename}`);
+        res.json({ success: true, message: 'File deleted from vault and database' });
+    });
+});
+
 app.listen(4000, '0.0.0.0', () => {
     console.log('VM 3 (Vault) running on port 4000 with SQLite DB attached');
 });
